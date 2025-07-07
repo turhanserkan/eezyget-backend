@@ -24,7 +24,7 @@
   "author": "eezyGet",
   "license": "MIT",
   "dependencies": {
-    "@distube/ytdl-core": "^4.14.4",
+    "@distube/ytdl-core": "latest",
     "archiver": "^6.0.1",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
