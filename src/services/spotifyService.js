@@ -11,16 +11,20 @@
         }
 
         async getAccessToken() {
-            if (this.accessToken && this.tokenExpiry > Date.now()) {
-                return this.accessToken;
-            }
-
-            const clientId = process.env.SPOTIFY_CLIENT_ID;
-            const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-
-            if (!clientId || !clientSecret) {
-                throw new Error('Spotify credentials not configured');
-            }
+          if (this.accessToken && this.tokenExpiry > Date.now()) {
+              return this.accessToken;
+          }
+    
+          const clientId = process.env.SPOTIFY_CLIENT_ID;
+          const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+    
+          console.log('Spotify Client ID:', clientId ? 'SET' : 'MISSING');
+          console.log('Spotify Client Secret:', clientSecret ? 'SET' : 'MISSING');
+    
+          if (!clientId || !clientSecret) {
+              console.error('Spotify credentials missing!');
+              throw new Error('Spotify credentials not configured');
+          }
 
             try {
                 const response = await axios.post(
