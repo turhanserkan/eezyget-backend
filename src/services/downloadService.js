@@ -167,7 +167,8 @@ class DownloadService {
                 year: metadata.year,
                 genre: metadata.genre,
                 trackNumber: metadata.trackNumber,
-                partOfSet: metadata.discNumber
+                partOfSet: metadata.discNumber,
+                comment: 'Downloaded from Spotify via eezyGet'
             };
 
             // Download and add album art if available
