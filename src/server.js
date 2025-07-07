@@ -1,3 +1,8 @@
+  console.log('=== SERVER STARTING ===');
+  console.log('Node version:', process.version);
+  console.log('Platform:', process.platform);
+
+  try {
   const express = require('express');
   const cors = require('cors');
   const helmet = require('helmet');
@@ -6,12 +11,16 @@
   const path = require('path');
   const fs = require('fs');
 
+  console.log('=== LOADING MODULES ===');
+
   const logger = require('./utils/logger');
   const downloadRoutes = require('./routes/download');
   const spotifyRoutes = require('./routes/spotify');
   const youtubeRoutes = require('./routes/youtube');
   const { errorHandler } = require('./middleware/errorHandler');
   const { requestLogger } = require('./middleware/requestLogger');
+
+  console.log('=== MODULES LOADED ===');
 
   dotenv.config();
 
@@ -20,6 +29,7 @@
 
   // Trust proxy for Railway deployment
   app.set('trust proxy', true);
+
   // Create required directories
   const requiredDirs = ['downloads', 'temp', 'logs'];
   requiredDirs.forEach(dir => {
@@ -137,11 +147,21 @@
       });
   });
 
+  console.log('=== STARTING SERVER ===');
+
   // Start server
   const server = app.listen(PORT, () => {
+      console.log(`=== SERVER STARTED ON PORT ${PORT} ===`);
       logger.info(`eezyGet Backend API running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`Health check: http://localhost:${PORT}/health`);
   });
 
   module.exports = app;
+
+  } catch (error) {
+      console.error('=== STARTUP ERROR ===');
+      console.error('Error:', error.message);
+      console.error('Stack:', error.stack);
+      process.exit(1);
+  }
