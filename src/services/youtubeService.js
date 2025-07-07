@@ -8,10 +8,6 @@
   const logger = require('../utils/logger');
   const logger = require('../utils/logger');
 
-  // FFmpeg configuration for Railway
-  const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-  ffmpeg.setFfmpegPath(ffmpegPath);
-
   class YouTubeService {
       constructor() {
           this.downloadPath = path.join(__dirname, '../../downloads');
