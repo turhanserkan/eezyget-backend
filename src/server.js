@@ -48,7 +48,12 @@
 
   // CORS configuration
   const corsOptions = {
-      origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
+      origin: [
+          'https://eezyget.com',
+          'https://www.eezyget.com',
+          'http://localhost:3000',
+          'http://127.0.0.1:3000'
+      ],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
       credentials: true,
