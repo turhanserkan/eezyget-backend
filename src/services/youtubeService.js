@@ -4,10 +4,12 @@
   const { v4: uuidv4 } = require('uuid');
   const sanitize = require('sanitize-filename');
   const ffmpeg = require('fluent-ffmpeg');
+
   const NodeID3 = require('node-id3');
   const logger = require('../utils/logger');
   const logger = require('../utils/logger');
-
+  // Set FFmpeg path for Docker/Alpine
+  ffmpeg.setFfmpegPath('ffmpeg');
   class YouTubeService {
       constructor() {
           this.downloadPath = path.join(__dirname, '../../downloads');
