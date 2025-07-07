@@ -24,35 +24,39 @@
       }
 
       async getVideoInfo(url) {
-          try {
-              const info = await ytdl.getInfo(url);
-              const videoDetails = info.videoDetails;
+      try {
+          logger.info(`Fetching video info for: ${url}`);
+          const info = await ytdl.getInfo(url);
+          logger.info('Successfully fetched video info');
+          const videoDetails = info.videoDetails;
 
-              return {
-                  id: videoDetails.videoId,
-                  title: videoDetails.title,
-                  description: videoDetails.description,
-                  lengthSeconds: parseInt(videoDetails.lengthSeconds),
-                  viewCount: parseInt(videoDetails.viewCount),
-                  author: {
-                      id: videoDetails.author.id,
-                      name: videoDetails.author.name,
-                      user: videoDetails.author.user,
-                      channelUrl: videoDetails.author.channel_url,
-                      userUrl: videoDetails.author.user_url
-                  },
-                  uploadDate: videoDetails.uploadDate,
-                  thumbnails: videoDetails.thumbnails,
-                  keywords: videoDetails.keywords,
-                  category: videoDetails.category,
-                  isLiveContent: videoDetails.isLiveContent,
-                  url: videoDetails.video_url
-              };
-          } catch (error) {
-              logger.error('Failed to get YouTube video info:', error.message);
-              throw new Error('Failed to get video information');
-          }
+          return {
+              id: videoDetails.videoId,
+              title: videoDetails.title,
+              description: videoDetails.description,
+              lengthSeconds: parseInt(videoDetails.lengthSeconds),
+              viewCount: parseInt(videoDetails.viewCount),
+              author: {
+                  id: videoDetails.author.id,
+                  name: videoDetails.author.name,
+                  user: videoDetails.author.user,
+                  channelUrl: videoDetails.author.channel_url,
+                  userUrl: videoDetails.author.user_url
+              },
+              uploadDate: videoDetails.uploadDate,
+              thumbnails: videoDetails.thumbnails,
+              keywords: videoDetails.keywords,
+              category: videoDetails.category,
+              isLiveContent: videoDetails.isLiveContent,
+              url: videoDetails.video_url
+          };
+      } catch (error) {
+          logger.error('Failed to get YouTube video info - Full error:', error);
+          logger.error('Error message:', error.message);
+          logger.error('Error stack:', error.stack);
+          throw new Error(`Failed to get video information: ${error.message}`);
       }
+  }
 
       async downloadVideo(url, format = 'mp3', quality = '320') {
           const jobId = uuidv4();
