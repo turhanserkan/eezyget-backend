@@ -31,6 +31,7 @@ class YouTubeService {
                     }
                 }
             });
+            logger.info(`Successfully got video info for: ${info.videoDetails.title}`);
             const videoDetails = info.videoDetails;
             
             return {
