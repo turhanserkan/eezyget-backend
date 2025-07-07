@@ -177,7 +177,13 @@
                   if (isVideoFormat && !isAudioQuality) {
                       // Video download - direct download without conversion first
                       const videoStream = ytdl(videoUrl, {
-                          quality: 'highest'
+                          quality: 'highest',
+                          requestOptions: {
+                              headers: {
+                                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                      AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                              }
+                          }
                       });
 
                       // Simple direct download first, then convert if needed
@@ -200,9 +206,14 @@
                   }
 
                   // Audio download
-                  const stream = ytdl(videoUrl, {
-                      quality: 'highestaudio',
-                      filter: 'audioonly'
+                  const videoStream = ytdl(videoUrl, {
+                      quality: 'highest',
+                      requestOptions: {
+                          headers: {
+                              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                          }
+                      }
                   });
 
                   if (format === 'mp3') {
