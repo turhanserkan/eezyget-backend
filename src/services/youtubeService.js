@@ -6,6 +6,11 @@
   const ffmpeg = require('fluent-ffmpeg');
   const NodeID3 = require('node-id3');
   const logger = require('../utils/logger');
+  const logger = require('../utils/logger');
+
+  // FFmpeg configuration for Railway
+  const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  ffmpeg.setFfmpegPath(ffmpegPath);
 
   class YouTubeService {
       constructor() {
