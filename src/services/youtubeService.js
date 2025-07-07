@@ -153,3 +153,180 @@
               throw error;
           }
       }
+      async downloadFromYouTube(videoUrl, outputPath, format = 'mp3', quality =
+  '320') {
+          return new Promise(async (resolve, reject) => {
+              try {
+                  // Determine if this is video or audio download
+                  const isVideoFormat = ['mp4', 'webm', 'avi'].includes(format);
+                  const isAudioQuality = ['64', '128', '192', '256',
+  '320'].includes(quality);
+
+                  if (isVideoFormat && !isAudioQuality) {
+                      // Video download - direct download without conversion first
+                      const videoStream = ytdl(videoUrl, {
+                          quality: 'highest'
+                      });
+
+                      // Simple direct download first, then convert if needed
+                      const writeStream = fs.createWriteStream(outputPath);
+                      videoStream.pipe(writeStream);
+
+                      writeStream.on('finish', () => {
+                          logger.info(`YouTube video download completed:
+  ${outputPath} (${quality}p)`);
+                          resolve(outputPath);
+                      });
+
+                      writeStream.on('error', (err) => {
+                          logger.error(`YouTube video download failed:
+  ${err.message}`);
+                          reject(err);
+                      });
+
+                      return;
+                  }
+
+                  // Audio download
+                  const stream = ytdl(videoUrl, {
+                      quality: 'highestaudio',
+                      filter: 'audioonly'
+                  });
+
+                  if (format === 'mp3') {
+                      const ffmpegCommand = ffmpeg(stream)
+                          .audioBitrate(quality)
+                          .format('mp3')
+                          .audioCodec('libmp3lame')
+                          .audioChannels(2)
+                          .audioFrequency(44100);
+
+                      ffmpegCommand
+                          .save(outputPath)
+                          .on('progress', (progress) => {
+                              logger.debug(`YouTube download progress:
+  ${progress.percent}%`);
+                          })
+                          .on('end', () => {
+                              logger.info(`YouTube download completed: ${outputPath}
+  (${quality}kbps)`);
+                              resolve(outputPath);
+                          })
+                          .on('error', (err) => {
+                              logger.error(`YouTube download failed:
+  ${err.message}`);
+                              reject(err);
+                          });
+                  } else {
+                      // Direct stream download for other formats
+                      const writeStream = fs.createWriteStream(outputPath);
+                      stream.pipe(writeStream);
+
+                      writeStream.on('finish', () => {
+                          logger.info(`Download completed: ${outputPath}`);
+                          resolve(outputPath);
+                      });
+
+                      writeStream.on('error', (err) => {
+                          logger.error(`Download failed: ${err.message}`);
+                          reject(err);
+                      });
+                  }
+              } catch (error) {
+                  logger.error(`Download initialization failed: ${error.message}`);
+                  reject(error);
+              }
+          });
+      }
+
+      async addMetadata(filePath, metadata) {
+          try {
+              const tags = {
+                  title: metadata.title,
+                  artist: metadata.artist,
+                  album: metadata.album,
+                  year: metadata.year,
+                  comment: 'Downloaded from YouTube via eezyGet'
+              };
+
+              // Download and add thumbnail if available
+              if (metadata.image) {
+                  try {
+                      const axios = require('axios');
+                      const response = await axios.get(metadata.image, {
+  responseType: 'arraybuffer' });
+                      const buffer = Buffer.from(response.data);
+                      tags.image = {
+                          mime: 'image/jpeg',
+                          type: {
+                              id: 3,
+                              name: 'Front Cover'
+                          },
+                          description: 'Thumbnail',
+                          imageBuffer: buffer
+                      };
+                  } catch (error) {
+                      logger.warn(`Failed to download thumbnail: ${error.message}`);
+                  }
+              }
+
+              NodeID3.write(tags, filePath);
+              logger.info(`Metadata added to: ${filePath}`);
+          } catch (error) {
+              logger.error(`Failed to add metadata: ${error.message}`);
+          }
+      }
+
+      async searchVideos(query, limit = 10) {
+          try {
+              const ytsr = require('ytsr');
+              const searchResults = await ytsr(query, { limit });
+
+              return searchResults.items
+                  .filter(item => item.type === 'video')
+                  .map(item => ({
+                      id: item.id,
+                      title: item.title,
+                      duration: item.duration,
+                      url: item.url,
+                      thumbnail: item.bestThumbnail?.url,
+                      views: item.views,
+                      uploadDate: item.uploadedAt,
+                      author: {
+                          name: item.author?.name,
+                          channelUrl: item.author?.channelUrl
+                      }
+                  }));
+          } catch (error) {
+              logger.error('YouTube search failed:', error.message);
+              throw new Error('Failed to search YouTube');
+          }
+      }
+
+      async getDownloadStatus(jobId) {
+          const status = this.activeDownloads.get(jobId);
+          if (!status) {
+              throw new Error('Download job not found');
+          }
+          return status;
+      }
+
+      async getDownloadFile(jobId) {
+          const status = this.activeDownloads.get(jobId);
+          if (!status || status.status !== 'completed') {
+              throw new Error('Download not completed or job not found');
+          }
+          return status.filePath;
+      }
+
+      async getDownloadHistory(limit = 50, offset = 0) {
+          return this.downloadHistory
+              .slice(offset, offset + limit)
+              .map(item => ({
+                  ...item,
+                  filePath: undefined // Don't expose file paths
+              }));
+      }
+  }
+
+  module.exports = new YouTubeService();
