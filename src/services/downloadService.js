@@ -26,25 +26,32 @@ class DownloadService {
     }
 
     async searchYouTube(query, maxResults = 5) {
-        try {
-            const searchResults = await ytsr(query, { limit: maxResults });
-            
-            return searchResults.items
-                .filter(item => item.type === 'video')
-                .map(item => ({
-                    id: item.id,
-                    title: item.title,
-                    duration: item.duration,
-                    url: item.url,
-                    thumbnail: item.bestThumbnail?.url,
-                    views: item.views,
-                    uploadDate: item.uploadedAt
-                }));
-        } catch (error) {
-            logger.error('YouTube search failed:', error.message);
-            throw new Error('Failed to search YouTube');
-        }
-    }
+      try {
+          const searchResults = await ytsr(query, {
+              limit: maxResults,
+              requestOptions: {
+                  headers: {
+                      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                  }
+              }
+          });
+
+          return searchResults.items
+              .filter(item => item.type === 'video')
+              .map(item => ({
+                  id: item.id,
+                  title: item.title,
+                  duration: item.duration,
+                  url: item.url,
+                  thumbnail: item.bestThumbnail?.url,
+                  views: item.views,
+                  uploadDate: item.uploadedAt
+              }));
+      } catch (error) {
+          logger.error('YouTube search failed:', error.message);
+          throw new Error('Failed to search YouTube');
+      }
+  }
 
     async findBestMatch(spotifyTrack) {
         const artists = spotifyTrack.artists.map(a => a.name).join(' ');
