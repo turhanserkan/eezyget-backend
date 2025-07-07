@@ -77,6 +77,7 @@
         }
 
         async getTrack(trackId) {
+            console.log('Getting track:', trackId);
             const data = await this.makeRequest(`/tracks/${trackId}`);
 
             return {
