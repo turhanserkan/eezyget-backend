@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eezyGet - Spotify Müzik İndirici</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <!-- Header content will be loaded by header-footer.js -->
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">Spotify Müzik İndirici</h1>
+                <p class="hero-subtitle">Spotify şarkıları, albümleri ve playlistleri ücretsiz MP3 formatında indirin</p>
+                
+                <div class="download-form">
+                    <div class="input-group">
+                        <input type="text" id="spotify-url" placeholder="Spotify linkini buraya yapıştırın..." class="url-input">
+                        <button class="download-btn" id="download-btn">
+                            <i class="fas fa-download"></i>
+                            İndir
+                        </button>
+                    </div>
+                    
+                    <!-- Options Panel (Hidden by default) -->
+                    <div class="download-options" id="download-options" style="display: none;">
+                        <div class="options-section">
+                            <h3>Kalite Seçimi</h3>
+                            <div class="quality-selector">
+                                <button class="quality-btn" data-quality="64">64 kbps</button>
+                                <button class="quality-btn" data-quality="128">128 kbps</button>
+                                <button class="quality-btn" data-quality="192">192 kbps</button>
+                                <button class="quality-btn" data-quality="256">256 kbps</button>
+                                <button class="quality-btn active" data-quality="320">320 kbps</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Section -->
+                        <div class="preview-section" id="preview-section" style="display: none;">
+                            <div class="preview-info">
+                                <div class="preview-thumbnail">
+                                    <img id="preview-image" src="" alt="Preview">
+                                </div>
+                                <div class="preview-details">
+                                    <h4 id="preview-title">Şarkı Adı</h4>
+                                    <p id="preview-artist">Sanatçı</p>
+                                    <div class="preview-stats">
+                                        <span id="preview-duration"><i class="fas fa-clock"></i> 0:00</span>
+                                        <span id="preview-size"><i class="fas fa-file"></i> ~0 MB</span>
+                                        <span id="preview-format"><i class="fas fa-cog"></i> MP3</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="options-actions">
+                            <button class="action-btn secondary" id="preview-btn">
+                                <i class="fas fa-eye"></i>
+                                Önizle
+                            </button>
+                            <button class="action-btn primary" id="process-btn">
+                                <i class="fas fa-download"></i>
+                                İndir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fab fa-spotify"></i>
+                        <span>Spotify Özel</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-music"></i>
+                        <span>Yüksek Kalite</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Hızlı İndirme</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Güvenli</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-to-use">
+                <h2>Nasıl Kullanılır?</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Spotify Linkini Kopyala</h3>
+                            <p>İndirmek istediğiniz şarkı, albüm veya playlist linkini Spotify'dan kopyalayın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Linki Yapıştır</h3>
+                            <p>Kopyaladığınız linki yukarıdaki kutucuğa yapıştırın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Kalite Seç & İndir</h3>
+                            <p>İstediğiniz kaliteyi seçin ve "İndir" butonuna tıklayın</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="supported-formats">
+                <h2>Desteklenen Spotify İçerikleri</h2>
+                <div class="formats">
+                    <div class="format-item">
+                        <i class="fas fa-music"></i>
+                        <span>Tek Şarkılar</span>
+                    </div>
+                    <div class="format-item">
+                        <i class="fas fa-compact-disc"></i>
+                        <span>Albümler</span>
+                    </div>
+                    <div class="format-item">
+                        <i class="fas fa-list"></i>
+                        <span>Playlistler</span>
+                    </div>
+                    <div class="format-item">
+                        <i class="fas fa-microphone"></i>
+                        <span>Sanatçı Profilleri</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quality-info">
+                <h2>Kalite Seçenekleri</h2>
+                <div class="quality-grid">
+                    <div class="quality-card">
+                        <h3>64 kbps</h3>
+                        <p>Temel kalite - Düşük dosya boyutu</p>
+                        <span class="quality-badge basic">Temel</span>
+                    </div>
+                    <div class="quality-card">
+                        <h3>128 kbps</h3>
+                        <p>İyi kalite - Orta dosya boyutu</p>
+                        <span class="quality-badge good">İyi</span>
+                    </div>
+                    <div class="quality-card">
+                        <h3>192 kbps</h3>
+                        <p>Yüksek kalite - İyi ses deneyimi</p>
+                        <span class="quality-badge high">Yüksek</span>
+                    </div>
+                    <div class="quality-card">
+                        <h3>256 kbps</h3>
+                        <p>Çok yüksek kalite - Premium deneyim</p>
+                        <span class="quality-badge premium">Premium</span>
+                    </div>
+                    <div class="quality-card recommended">
+                        <h3>320 kbps</h3>
+                        <p>En yüksek kalite - Stüdyo kalitesi</p>
+                        <span class="quality-badge ultra">Ultra</span>
+                        <div class="recommended-badge">Önerilen</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <!-- Footer content will be loaded by header-footer.js -->
+    </footer>
+
+    <script src="assets/js/header-footer.js"></script>
+    <script src="assets/js/platform-translations.js"></script>
+    <script src="assets/js/ads.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

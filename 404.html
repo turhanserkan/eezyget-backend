@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sayfa Bulunamadı | eezyGet</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <!-- Header content will be loaded by header-footer.js -->
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="error-page">
+                <div class="error-content">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h1 class="error-title">404</h1>
+                    <h2 class="error-subtitle">Sayfa Bulunamadı</h2>
+                    <p class="error-description">
+                        Aradığınız sayfa mevcut değil veya taşınmış olabilir. 
+                        Ana sayfaya dönerek mevcut platformları keşfedebilirsiniz.
+                    </p>
+                    
+                    <div class="error-actions">
+                        <a href="index.html" class="error-btn primary">
+                            <i class="fas fa-home"></i>
+                            Ana Sayfaya Dön
+                        </a>
+                        <button onclick="history.back()" class="error-btn secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Geri Git
+                        </button>
+                    </div>
+
+                    <div class="quick-links">
+                        <h3>Hızlı Erişim</h3>
+                        <div class="platform-grid">
+                            <a href="spotify.html" class="platform-quick-link spotify">
+                                <i class="fab fa-spotify"></i>
+                                <span>Spotify</span>
+                            </a>
+                            <a href="youtube.html" class="platform-quick-link youtube">
+                                <i class="fab fa-youtube"></i>
+                                <span>YouTube</span>
+                            </a>
+                            <a href="instagram.html" class="platform-quick-link instagram">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                                <small>Yakında</small>
+                            </a>
+                            <a href="tiktok.html" class="platform-quick-link tiktok">
+                                <i class="fab fa-tiktok"></i>
+                                <span>TikTok</span>
+                                <small>Yakında</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <!-- Footer content will be loaded by header-footer.js -->
+    </footer>
+
+    <script src="assets/js/header-footer.js"></script>
+    <script src="assets/js/platform-translations.js"></script>
+    <script src="assets/js/ads.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

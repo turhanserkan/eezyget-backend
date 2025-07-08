@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eezyGet - Spotify Müzik İndirici</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="logo-01.svg" alt="eezyGet" class="logo-svg">
+            </div>
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="tr">🇹🇷 TR</button>
+                <button class="lang-btn" data-lang="en">🇺🇸 EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">Spotify & YouTube İndirici</h1>
+                <p class="hero-subtitle">Spotify şarkıları, playlistleri ve YouTube videolarını ücretsiz MP3/MP4 formatında indirin</p>
+                
+                <div class="download-form">
+                    <div class="input-group">
+                        <input type="text" id="spotify-url" placeholder="Spotify veya YouTube linkini buraya yapıştırın..." class="url-input">
+                        <button class="download-btn" id="download-btn">
+                            <i class="fas fa-download"></i>
+                            İndir
+                        </button>
+                    </div>
+                    
+                    <!-- Options Panel (Hidden by default) -->
+                    <div class="download-options" id="download-options" style="display: none;">
+                        <div class="options-section">
+                            <h3>Format Seçimi</h3>
+                            <div class="format-selector">
+                                <button class="format-btn active" data-format="audio">
+                                    <i class="fas fa-music"></i>
+                                    Audio (MP3)
+                                </button>
+                                <button class="format-btn" data-format="video">
+                                    <i class="fas fa-video"></i>
+                                    Video (MP4)
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="options-section">
+                            <h3>Kalite Seçimi</h3>
+                            <div class="quality-selector">
+                                <!-- Audio Quality -->
+                                <div class="quality-group audio-quality">
+                                    <button class="quality-btn" data-quality="64">64 kbps</button>
+                                    <button class="quality-btn" data-quality="128">128 kbps</button>
+                                    <button class="quality-btn" data-quality="192">192 kbps</button>
+                                    <button class="quality-btn" data-quality="256">256 kbps</button>
+                                    <button class="quality-btn active" data-quality="320">320 kbps</button>
+                                </div>
+                                
+                                <!-- Video Quality -->
+                                <div class="quality-group video-quality" style="display: none;">
+                                    <button class="quality-btn" data-quality="144">144p</button>
+                                    <button class="quality-btn" data-quality="240">240p</button>
+                                    <button class="quality-btn" data-quality="360">360p</button>
+                                    <button class="quality-btn active" data-quality="480">480p</button>
+                                    <button class="quality-btn" data-quality="720">720p HD</button>
+                                    <button class="quality-btn" data-quality="1080">1080p FHD</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Section -->
+                        <div class="preview-section" id="preview-section" style="display: none;">
+                            <div class="preview-info">
+                                <div class="preview-thumbnail">
+                                    <img id="preview-image" src="" alt="Preview" style="display: block;">
+                                    <video id="preview-video" controls style="display: none;" width="80" height="60">
+                                        <source id="preview-video-src" src="" type="video/mp4">
+                                        Tarayıcınız video oynatmayı desteklemiyor.
+                                    </video>
+                                </div>
+                                <div class="preview-details">
+                                    <h4 id="preview-title">Şarkı/Video Adı</h4>
+                                    <p id="preview-artist">Sanatçı/Kanal</p>
+                                    <div class="preview-stats">
+                                        <span id="preview-duration"><i class="fas fa-clock"></i> 0:00</span>
+                                        <span id="preview-size"><i class="fas fa-file"></i> ~0 MB</span>
+                                        <span id="preview-format"><i class="fas fa-cog"></i> Format</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="options-actions">
+                            <button class="action-btn secondary" id="preview-btn">
+                                <i class="fas fa-eye"></i>
+                                Önizle
+                            </button>
+                            <button class="action-btn primary" id="process-btn">
+                                <i class="fas fa-download"></i>
+                                İndir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <i class="fas fa-music"></i>
+                        <span>Yüksek Kalite</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Hızlı İndirme</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Tüm Cihazlar</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Güvenli</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-to-use">
+                <h2>Nasıl Kullanılır?</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Spotify Linkini Kopyala</h3>
+                            <p>İndirmek istediğiniz şarkı veya playlist linkini Spotify'dan kopyalayın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Linki Yapıştır</h3>
+                            <p>Kopyaladığınız linki yukarıdaki kutucuğa yapıştırın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>İndirme Başlat</h3>
+                            <p>"İndir" butonuna tıklayın ve müziğinizin hazır olmasını bekleyin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="supported-formats">
+                <h2>Desteklenen Formatlar</h2>
+                <div class="formats">
+                    <div class="format-item">
+                        <i class="fas fa-file-audio"></i>
+                        <span>MP3 320kbps</span>
+                    </div>
+                    <div class="format-item">
+                        <i class="fas fa-file-audio"></i>
+                        <span>MP3 256kbps</span>
+                    </div>
+                    <div class="format-item">
+                        <i class="fas fa-file-audio"></i>
+                        <span>MP3 128kbps</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="current-year">2025</span> eezyGet. Tüm hakları saklıdır.</p>
+            <p class="disclaimer">Bu site yalnızca eğitim amaçlıdır. Telif hakkı yasalarına uygun hareket edin.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

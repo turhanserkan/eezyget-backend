@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eezyGet - Çoklu Platform Müzik & Video İndirici</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/homepage.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <!-- Header content will be loaded by header-footer.js -->
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1 class="hero-title">Çoklu Platform İndirici</h1>
+                <p class="hero-subtitle">Favori platformlarınızdan müzik ve video indirin</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Platform</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">İndirme</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Ücretsiz</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Selection -->
+            <div class="platforms-section">
+                <h2 class="section-title">Platform Seçin</h2>
+                <div class="platforms-grid">
+                    <!-- Spotify -->
+                    <div class="platform-card spotify" onclick="goToPlatform('spotify')">
+                        <div class="platform-icon">
+                            <i class="fab fa-spotify"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>Spotify</h3>
+                            <p>Şarkı, album ve playlist indirin</p>
+                            <div class="platform-features">
+                                <span class="feature-tag">MP3 64-320kbps</span>
+                                <span class="feature-tag">Metadata</span>
+                                <span class="feature-tag">Album Art</span>
+                            </div>
+                        </div>
+                        <div class="platform-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- YouTube -->
+                    <div class="platform-card youtube" onclick="goToPlatform('youtube')">
+                        <div class="platform-icon">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>YouTube</h3>
+                            <p>Video ve audio indirin</p>
+                            <div class="platform-features">
+                                <span class="feature-tag">MP3/MP4</span>
+                                <span class="feature-tag">144p-1080p</span>
+                                <span class="feature-tag">Hızlı</span>
+                            </div>
+                        </div>
+                        <div class="platform-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- SoundCloud -->
+                    <div class="platform-card soundcloud coming-soon">
+                        <div class="platform-icon">
+                            <i class="fab fa-soundcloud"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>SoundCloud</h3>
+                            <p>Yakında geliyor...</p>
+                            <div class="platform-features">
+                                <span class="feature-tag soon">Çok Yakında</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+
+                    <!-- TikTok -->
+                    <div class="platform-card tiktok coming-soon">
+                        <div class="platform-icon">
+                            <i class="fab fa-tiktok"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>TikTok</h3>
+                            <p>Yakında geliyor...</p>
+                            <div class="platform-features">
+                                <span class="feature-tag soon">Çok Yakında</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="platform-card instagram coming-soon">
+                        <div class="platform-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>Instagram</h3>
+                            <p>Yakında geliyor...</p>
+                            <div class="platform-features">
+                                <span class="feature-tag soon">Çok Yakında</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+
+                    <!-- Twitter -->
+                    <div class="platform-card twitter coming-soon">
+                        <div class="platform-icon">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>Twitter/X</h3>
+                            <p>Yakında geliyor...</p>
+                            <div class="platform-features">
+                                <span class="feature-tag soon">Çok Yakında</span>
+                            </div>
+                        </div>
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2 class="section-title">Özellikler</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Hızlı İndirme</h3>
+                        <p>Optimized download speeds for all platforms</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Güvenli</h3>
+                        <p>No malware, completely safe downloads</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Tüm Cihazlar</h3>
+                        <p>Works on desktop, mobile, and tablet</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Ücretsiz</h3>
+                        <p>Completely free, no hidden charges</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <h2 class="section-title">Nasıl Çalışır?</h2>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Platform Seçin</h3>
+                            <p>İndirmek istediğiniz platform kartına tıklayın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Link Yapıştırın</h3>
+                            <p>İndirmek istediğiniz içeriğin linkini yapıştırın</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Kalite Seçin</h3>
+                            <p>İstediğiniz format ve kaliteyi belirleyin</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>İndirin</h3>
+                            <p>İndirme butonuna basın ve dosyanızı alın</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <!-- Footer content will be loaded by header-footer.js -->
+    </footer>
+
+    <script src="assets/js/platform-translations.js"></script>
+    <script src="assets/js/header-footer.js"></script>
+    <script src="assets/js/ads.js"></script>
+    <script src="assets/js/homepage.js"></script>
+</body>
+</html>
