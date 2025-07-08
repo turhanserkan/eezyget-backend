@@ -31,10 +31,23 @@ class DownloadService {
             console.log('Query:', query);
             console.log('Max results:', maxResults);
             
+            // Add delay to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
             const searchResults = await ytsr(query, { 
                 limit: maxResults,
                 gl: 'US',
-                hl: 'en'
+                hl: 'en',
+                requestOptions: {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1'
+                    }
+                }
             });
             
             console.log('Search results found:', searchResults.items.length);
@@ -61,7 +74,37 @@ class DownloadService {
         } catch (error) {
             console.error('YouTube search error details:', error);
             logger.error('YouTube search failed:', error.message);
+            
+            // If ytsr fails, try alternative approach
+            if (error.message.includes('bot') || error.message.includes('lockupViewModel')) {
+                console.log('Bot protection detected, using fallback method');
+                return await this.fallbackYouTubeSearch(query, maxResults);
+            }
+            
             throw new Error('Failed to search YouTube');
+        }
+    }
+
+    async fallbackYouTubeSearch(query, maxResults = 5) {
+        try {
+            // Simple fallback - construct YouTube search URL manually
+            const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+            logger.info(`Fallback search URL: ${searchUrl}`);
+            
+            // For now, return a simplified result structure
+            // In production, you might want to implement a more sophisticated fallback
+            return [{
+                id: 'fallback',
+                title: `Search for: ${query}`,
+                duration: '0:00',
+                url: searchUrl,
+                thumbnail: null,
+                views: 0,
+                uploadDate: new Date().toISOString()
+            }];
+        } catch (error) {
+            logger.error('Fallback search failed:', error.message);
+            throw new Error('All YouTube search methods failed');
         }
     }
 
