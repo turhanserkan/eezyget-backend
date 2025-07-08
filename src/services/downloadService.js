@@ -25,16 +25,23 @@ class DownloadService {
         });
     }
 
-    async searchYouTube(query, maxResults = 5) {
+  async searchYouTube(query, maxResults = 5) {
       try {
+          console.log('=== YOUTUBE SEARCH DEBUG ===');
+          console.log('Search query:', query);
+          console.log('Max results:', maxResults);
+
           const searchResults = await ytsr(query, {
               limit: maxResults,
               requestOptions: {
                   headers: {
-                      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
                   }
               }
           });
+
+          console.log('Search results count:', searchResults.items.length);
 
           return searchResults.items
               .filter(item => item.type === 'video')
@@ -48,6 +55,10 @@ class DownloadService {
                   uploadDate: item.uploadedAt
               }));
       } catch (error) {
+          console.log('=== YOUTUBE SEARCH ERROR ===');
+          console.log('Error message:', error.message);
+          console.log('Error stack:', error.stack);
+          console.log('==========================');
           logger.error('YouTube search failed:', error.message);
           throw new Error('Failed to search YouTube');
       }
