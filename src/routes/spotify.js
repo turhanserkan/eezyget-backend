@@ -77,3 +77,5 @@
           data: results
       });
   }));
+
+  module.exports = router;
