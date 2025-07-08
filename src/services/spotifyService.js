@@ -1,256 +1,268 @@
-    const axios = require('axios');
-    const NodeCache = require('node-cache');
-    const logger = require('../utils/logger');
+  const axios = require('axios');
+  const NodeCache = require('node-cache');
+  const logger = require('../utils/logger');
 
-    class SpotifyService {
-        constructor() {
-            this.cache = new NodeCache({ stdTTL: 3600 }); // 1 hour cache
-            this.accessToken = null;
-            this.tokenExpiry = null;
-            this.baseUrl = 'https://api.spotify.com/v1';
-        }
+  class SpotifyService {
+      constructor() {
+          this.cache = new NodeCache({ stdTTL: 3600 }); // 1 hour cache
+          this.accessToken = null;
+          this.tokenExpiry = null;
+          this.baseUrl = 'https://api.spotify.com/v1';
+      }
 
-        async getAccessToken() {
+      async getAccessToken() {
           if (this.accessToken && this.tokenExpiry > Date.now()) {
               return this.accessToken;
           }
-    
+
           const clientId = process.env.SPOTIFY_CLIENT_ID;
           const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-    
-          console.log('Spotify Client ID:', clientId ? 'SET' : 'MISSING');
-          console.log('Spotify Client Secret:', clientSecret ? 'SET' : 'MISSING');
-    
+
           if (!clientId || !clientSecret) {
-              console.error('Spotify credentials missing!');
               throw new Error('Spotify credentials not configured');
           }
 
-            try {
-                const response = await axios.post(
-                    'https://accounts.spotify.com/api/token',
-                    'grant_type=client_credentials',
-                    {
-                        headers: {
-                            'Authorization': `Basic
-    ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    }
-                );
+          try {
+              console.log('=== SPOTIFY TOKEN REQUEST DEBUG ===');
+              console.log('Client ID:', clientId);
+              console.log('Client Secret (first 10 chars):',
+  clientSecret.substring(0, 10) + '...');
+              console.log('Making request to Spotify token endpoint...');
 
-                this.accessToken = response.data.access_token;
-                this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
+              const response = await axios.post(
+                  'https://accounts.spotify.com/api/token',
+                  'grant_type=client_credentials',
+                  {
+                      headers: {
+                          'Authorization': `Basic
+  ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                      }
+                  }
+              );
 
-                logger.info('Spotify access token obtained successfully');
-                return this.accessToken;
-            } catch (error) {
-                logger.error('Failed to get Spotify access token:', error.message);
-                throw new Error('Failed to authenticate with Spotify');
-            }
-        }
+              console.log('Spotify token response status:', response.status);
+              console.log('Spotify token response data:', response.data);
 
-        async makeRequest(endpoint) {
-            const cacheKey = `spotify:${endpoint}`;
-            const cached = this.cache.get(cacheKey);
+              this.accessToken = response.data.access_token;
+              this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
 
-            if (cached) {
-                logger.debug(`Cache hit for ${endpoint}`);
-                return cached;
-            }
+              logger.info('Spotify access token obtained successfully');
+              return this.accessToken;
+          } catch (error) {
+              console.log('=== SPOTIFY TOKEN ERROR DEBUG ===');
+              console.log('Error message:', error.message);
+              console.log('Error code:', error.code);
+              console.log('Response status:', error.response?.status);
+              console.log('Response data:', error.response?.data);
+              console.log('Response headers:', error.response?.headers);
+              console.log('Request config:', error.config);
+              console.log('=====================================');
 
-            try {
-                const token = await this.getAccessToken();
-                const response = await axios.get(`${this.baseUrl}${endpoint}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+              logger.error('Failed to get Spotify access token:', error.message);
+              throw new Error('Failed to authenticate with Spotify');
+          }
+      }
 
-                this.cache.set(cacheKey, response.data);
-                logger.debug(`API request successful: ${endpoint}`);
-                return response.data;
-            } catch (error) {
-                logger.error(`Spotify API request failed: ${endpoint}`,
-    error.message);
-                if (error.response?.status === 404) {
-                    throw new Error('Track, album, or playlist not found');
-                }
-                throw new Error('Failed to fetch data from Spotify');
-            }
-        }
+      async makeRequest(endpoint) {
+          const cacheKey = `spotify:${endpoint}`;
+          const cached = this.cache.get(cacheKey);
 
-        async getTrack(trackId) {
-            console.log('Getting track:', trackId);
-            const data = await this.makeRequest(`/tracks/${trackId}`);
+          if (cached) {
+              logger.debug(`Cache hit for ${endpoint}`);
+              return cached;
+          }
 
-            return {
-                id: data.id,
-                name: data.name,
-                artists: data.artists.map(artist => ({
-                    id: artist.id,
-                    name: artist.name
-                })),
-                album: {
-                    id: data.album.id,
-                    name: data.album.name,
-                    images: data.album.images
-                },
-                duration_ms: data.duration_ms,
-                explicit: data.explicit,
-                popularity: data.popularity,
-                preview_url: data.preview_url,
-                external_urls: data.external_urls
-            };
-        }
+          try {
+              const token = await this.getAccessToken();
+              const response = await axios.get(`${this.baseUrl}${endpoint}`, {
+                  headers: {
+                      'Authorization': `Bearer ${token}`
+                  }
+              });
 
-        async getPlaylist(playlistId) {
-            const data = await this.makeRequest(`/playlists/${playlistId}`);
+              this.cache.set(cacheKey, response.data);
+              logger.debug(`API request successful: ${endpoint}`);
+              return response.data;
+          } catch (error) {
+              logger.error(`Spotify API request failed: ${endpoint}`, error.message);
+              if (error.response?.status === 404) {
+                  throw new Error('Track, album, or playlist not found');
+              }
+              throw new Error('Failed to fetch data from Spotify');
+          }
+      }
 
-            const tracks = await this.getPlaylistTracks(playlistId);
+      async getTrack(trackId) {
+          const data = await this.makeRequest(`/tracks/${trackId}`);
 
-            return {
-                id: data.id,
-                name: data.name,
-                description: data.description,
-                owner: {
-                    id: data.owner.id,
-                    display_name: data.owner.display_name
-                },
-                public: data.public,
-                collaborative: data.collaborative,
-                followers: data.followers.total,
-                images: data.images,
-                tracks: {
-                    total: data.tracks.total,
-                    items: tracks
-                },
-                external_urls: data.external_urls
-            };
-        }
+          return {
+              id: data.id,
+              name: data.name,
+              artists: data.artists.map(artist => ({
+                  id: artist.id,
+                  name: artist.name
+              })),
+              album: {
+                  id: data.album.id,
+                  name: data.album.name,
+                  images: data.album.images
+              },
+              duration_ms: data.duration_ms,
+              explicit: data.explicit,
+              popularity: data.popularity,
+              preview_url: data.preview_url,
+              external_urls: data.external_urls
+          };
+      }
 
-        async getPlaylistTracks(playlistId, limit = 100) {
-            const tracks = [];
-            let offset = 0;
-            let hasMore = true;
+      async getPlaylist(playlistId) {
+          const data = await this.makeRequest(`/playlists/${playlistId}`);
 
-            while (hasMore) {
-                const data = await this.makeRequest(`/playlists/${playlistId}/tracks?
-    limit=${limit}&offset=${offset}`);
+          const tracks = await this.getPlaylistTracks(playlistId);
 
-                const validTracks = data.items
-                    .filter(item => item.track && item.track.id)
-                    .map(item => ({
-                        id: item.track.id,
-                        name: item.track.name,
-                        artists: item.track.artists.map(artist => ({
-                            id: artist.id,
-                            name: artist.name
-                        })),
-                        album: {
-                            id: item.track.album.id,
-                            name: item.track.album.name,
-                            images: item.track.album.images
-                        },
-                        duration_ms: item.track.duration_ms,
-                        explicit: item.track.explicit,
-                        popularity: item.track.popularity,
-                        preview_url: item.track.preview_url,
-                        added_at: item.added_at
-                    }));
+          return {
+              id: data.id,
+              name: data.name,
+              description: data.description,
+              owner: {
+                  id: data.owner.id,
+                  display_name: data.owner.display_name
+              },
+              public: data.public,
+              collaborative: data.collaborative,
+              followers: data.followers.total,
+              images: data.images,
+              tracks: {
+                  total: data.tracks.total,
+                  items: tracks
+              },
+              external_urls: data.external_urls
+          };
+      }
 
-                tracks.push(...validTracks);
+      async getPlaylistTracks(playlistId, limit = 100) {
+          const tracks = [];
+          let offset = 0;
+          let hasMore = true;
 
-                hasMore = data.next !== null;
-                offset += limit;
-            }
+          while (hasMore) {
+              const data = await this.makeRequest(`/playlists/${playlistId}/tracks?li
+  mit=${limit}&offset=${offset}`);
 
-            return tracks;
-        }
+              const validTracks = data.items
+                  .filter(item => item.track && item.track.id)
+                  .map(item => ({
+                      id: item.track.id,
+                      name: item.track.name,
+                      artists: item.track.artists.map(artist => ({
+                          id: artist.id,
+                          name: artist.name
+                      })),
+                      album: {
+                          id: item.track.album.id,
+                          name: item.track.album.name,
+                          images: item.track.album.images
+                      },
+                      duration_ms: item.track.duration_ms,
+                      explicit: item.track.explicit,
+                      popularity: item.track.popularity,
+                      preview_url: item.track.preview_url,
+                      added_at: item.added_at
+                  }));
 
-        async getAlbum(albumId) {
-            const data = await this.makeRequest(`/albums/${albumId}`);
+              tracks.push(...validTracks);
 
-            return {
-                id: data.id,
-                name: data.name,
-                artists: data.artists.map(artist => ({
-                    id: artist.id,
-                    name: artist.name
-                })),
-                album_type: data.album_type,
-                total_tracks: data.total_tracks,
-                release_date: data.release_date,
-                images: data.images,
-                genres: data.genres,
-                popularity: data.popularity,
-                tracks: {
-                    total: data.tracks.total,
-                    items: data.tracks.items.map(track => ({
-                        id: track.id,
-                        name: track.name,
-                        artists: track.artists.map(artist => ({
-                            id: artist.id,
-                            name: artist.name
-                        })),
-                        duration_ms: track.duration_ms,
-                        explicit: track.explicit,
-                        preview_url: track.preview_url,
-                        track_number: track.track_number,
-                        disc_number: track.disc_number
-                    }))
-                },
-                external_urls: data.external_urls
-            };
-        }
+              hasMore = data.next !== null;
+              offset += limit;
+          }
 
-        async search(query, type = 'track', limit = 20) {
-            const encodedQuery = encodeURIComponent(query);
-            const data = await
-    this.makeRequest(`/search?q=${encodedQuery}&type=${type}&limit=${limit}`);
+          return tracks;
+      }
 
-            return data;
-        }
+      async getAlbum(albumId) {
+          const data = await this.makeRequest(`/albums/${albumId}`);
 
-        parseSpotifyUrl(url) {
-            const regex =
-    /https:\/\/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)(\?.*)?/;
-            const match = url.match(regex);
+          return {
+              id: data.id,
+              name: data.name,
+              artists: data.artists.map(artist => ({
+                  id: artist.id,
+                  name: artist.name
+              })),
+              album_type: data.album_type,
+              total_tracks: data.total_tracks,
+              release_date: data.release_date,
+              images: data.images,
+              genres: data.genres,
+              popularity: data.popularity,
+              tracks: {
+                  total: data.tracks.total,
+                  items: data.tracks.items.map(track => ({
+                      id: track.id,
+                      name: track.name,
+                      artists: track.artists.map(artist => ({
+                          id: artist.id,
+                          name: artist.name
+                      })),
+                      duration_ms: track.duration_ms,
+                      explicit: track.explicit,
+                      preview_url: track.preview_url,
+                      track_number: track.track_number,
+                      disc_number: track.disc_number
+                  }))
+              },
+              external_urls: data.external_urls
+          };
+      }
 
-            if (!match) {
-                throw new Error('Invalid Spotify URL');
-            }
+      async search(query, type = 'track', limit = 20) {
+          const encodedQuery = encodeURIComponent(query);
+          const data = await
+  this.makeRequest(`/search?q=${encodedQuery}&type=${type}&limit=${limit}`);
 
-            return {
-                type: match[1],
-                id: match[2],
-                url: url
-            };
-        }
+          return data;
+      }
 
-        async parseSpotifyUrlAndGetData(url) {
-            const parsed = this.parseSpotifyUrl(url);
+      parseSpotifyUrl(url) {
+          const regex =
+  /https:\/\/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)(\?.*)?/;
+          const match = url.match(regex);
 
-            let data;
-            switch (parsed.type) {
-                case 'track':
-                    data = await this.getTrack(parsed.id);
-                    break;
-                case 'album':
-                    data = await this.getAlbum(parsed.id);
-                    break;
-                case 'playlist':
-                    data = await this.getPlaylist(parsed.id);
-                    break;
-                default:
-                    throw new Error('Unsupported Spotify URL type');
-            }
+          if (!match) {
+              throw new Error('Invalid Spotify URL');
+          }
 
-            return {
-                ...parsed,
-                data
-            };
-        }
-    }
+          return {
+              type: match[1],
+              id: match[2],
+              url: url
+          };
+      }
 
-    module.exports = new SpotifyService();
+      async parseSpotifyUrlAndGetData(url) {
+          const parsed = this.parseSpotifyUrl(url);
+
+          let data;
+          switch (parsed.type) {
+              case 'track':
+                  data = await this.getTrack(parsed.id);
+                  break;
+              case 'album':
+                  data = await this.getAlbum(parsed.id);
+                  break;
+              case 'playlist':
+                  data = await this.getPlaylist(parsed.id);
+                  break;
+              default:
+                  throw new Error('Unsupported Spotify URL type');
+          }
+
+          return {
+              ...parsed,
+              data
+          };
+      }
+  }
+
+  module.exports = new SpotifyService();
