@@ -275,7 +275,7 @@ async function handleDownload() {
         }
 
         // Make API request
-        const response = await fetch(`https://web-production-2c962.up.railway.app${endpoint}`, {
+        const response = await fetch(`https://eezyget.up.railway.app${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -305,7 +305,7 @@ async function handleDownload() {
             if (urlType === 'track' || urlType === 'youtube') {
                 // Create download link
                 const downloadLink = document.createElement('a');
-                downloadLink.href = `https://web-production-2c962.up.railway.app${data.data.downloadUrl}`;
+                downloadLink.href = `https://eezyget.up.railway.app${data.data.downloadUrl}`;
                 downloadLink.download = data.data.filename;
                 downloadLink.style.display = 'none';
                 document.body.appendChild(downloadLink);
@@ -435,7 +435,7 @@ function showDownloadLink(data) {
                     ${data.totalTracks ? `<p><strong>${currentLang === 'tr' ? 'Toplam Şarkı:' : 'Total Tracks:'}</strong> ${data.completedTracks}/${data.totalTracks}</p>` : ''}
                 </div>
                 <div class="download-actions">
-                    <a href="https://web-production-2c962.up.railway.app${data.downloadUrl}" download="${data.filename}" class="download-link">
+                    <a href="https://eezyget.up.railway.app${data.downloadUrl}" download="${data.filename}" class="download-link">
                         <i class="fas fa-download"></i>
                         ${currentLang === 'tr' ? 'İndir' : 'Download'}
                     </a>
@@ -511,7 +511,7 @@ function closeModal() {
 }
 
 // API Configuration
-const API_BASE_URL = 'https://web-production-2c962.up.railway.app';
+const API_BASE_URL = 'https://eezyget.up.railway.app';
 
 // Health check
 async function checkBackendHealth() {
