@@ -72,16 +72,30 @@
   }));
 
   // Basic track download (for compatibility)
-  router.post('/track', asyncHandler(async (req, res) => {
+  router.post('/track', validateSpotifyUrl, asyncHandler(async (req, res) => {
       const { url, format = 'mp3', quality = '320' } = req.body;
 
-      // For now, treat all downloads as YouTube (can be expanded for Spotify later)
-      const result = await youtubeService.downloadVideo(url, format, quality);
+      console.log('=== DOWNLOAD TRACK DEBUG ===');
+      console.log('URL:', url);
+      console.log('Format:', format);
+      console.log('Quality:', quality);
 
-      res.json({
-          success: true,
-          data: result
-      });
+      try {
+          const result = await downloadService.downloadTrack(url, format, quality);
+
+          console.log('Download successful:', result);
+
+          res.json({
+              success: true,
+              data: result
+          });
+      } catch (error) {
+          console.log('=== DOWNLOAD ERROR DETAILS ===');
+          console.log('Error message:', error.message);
+          console.log('Error stack:', error.stack);
+          console.log('=============================');
+          throw error;
+      }
   }));
 
   module.exports = router;
