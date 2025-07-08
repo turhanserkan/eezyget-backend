@@ -1,91 +1,65 @@
   const express = require('express');
   const router = express.Router();
+  const spotifyService = require('../services/spotifyService');
+  const { validateSpotifyUrl } = require('../middleware/validation');
   const { asyncHandler } = require('../middleware/asyncHandler');
 
-  // Parse Spotify URL to get track info
-  router.post('/parse', asyncHandler(async (req, res) => {
-      const { url } = req.body;
-
-      // Basic Spotify URL parsing
-      const match =
-  url.match(/https:\/\/open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
-
-      if (!match) {
-          return res.status(400).json({
-              success: false,
-              error: 'Invalid Spotify URL'
-          });
-      }
-
-      const [, type, id] = match;
-
-      // Mock response for now (in real implementation, you'd use Spotify Web API)
-      const mockData = {
-          id: id,
-          type: type,
-          name: 'Sample Track',
-          artists: [{ name: 'Sample Artist' }],
-          album: {
-              name: 'Sample Album',
-              images: [{ url: 'https://via.placeholder.com/300x300' }]
-          },
-          duration_ms: 180000,
-          preview_url: null
-      };
-
-      res.json({
-          success: true,
-          data: mockData
-      });
-  }));
-
-  // Get track info by ID
+  // Get track information
   router.get('/track/:id', asyncHandler(async (req, res) => {
       const { id } = req.params;
 
-      // Mock response for now
-      const mockData = {
-          id: id,
-          name: 'Sample Track',
-          artists: [{ name: 'Sample Artist' }],
-          album: {
-              name: 'Sample Album',
-              images: [{ url: 'https://via.placeholder.com/300x300' }]
-          },
-          duration_ms: 180000,
-          preview_url: null
-      };
+      const track = await spotifyService.getTrack(id);
 
       res.json({
           success: true,
-          data: mockData
+          data: track
       });
   }));
 
-  // Get playlist info by ID
+  // Get playlist information
   router.get('/playlist/:id', asyncHandler(async (req, res) => {
       const { id } = req.params;
 
-      // Mock response for now
-      const mockData = {
-          id: id,
-          name: 'Sample Playlist',
-          description: 'A sample playlist',
-          owner: { display_name: 'Sample User' },
-          tracks: {
-              total: 50,
-              items: []
-          },
-          images: [{ url: 'https://via.placeholder.com/300x300' }]
-      };
+      const playlist = await spotifyService.getPlaylist(id);
 
       res.json({
           success: true,
-          data: mockData
+          data: playlist
       });
   }));
 
-  // Search Spotify (mock for now)
+  // Get album information
+  router.get('/album/:id', asyncHandler(async (req, res) => {
+      const { id } = req.params;
+
+      const album = await spotifyService.getAlbum(id);
+
+      res.json({
+          success: true,
+          data: album
+      });
+  }));
+
+  // Parse Spotify URL and get information
+  router.post('/parse', asyncHandler(async (req, res) => {
+      const { url } = req.body;
+
+      console.log('=== SPOTIFY PARSE DEBUG ===');
+      console.log('URL:', url);
+      console.log('CLIENT_ID:', process.env.SPOTIFY_CLIENT_ID);
+      console.log('CLIENT_SECRET exists:', !!process.env.SPOTIFY_CLIENT_SECRET);
+
+      const parsedData = await spotifyService.parseSpotifyUrlAndGetData(url);
+
+      console.log('Parsed data:', JSON.stringify(parsedData, null, 2));
+
+      res.json({
+          success: true,
+          data: parsedData
+      });
+  }));
+
+  // Search tracks
   router.get('/search', asyncHandler(async (req, res) => {
       const { q, type = 'track', limit = 20 } = req.query;
 
@@ -96,28 +70,10 @@
           });
       }
 
-      // Mock search results
-      const mockResults = {
-          tracks: {
-              items: [
-                  {
-                      id: 'sample1',
-                      name: `Search result for: ${q}`,
-                      artists: [{ name: 'Sample Artist' }],
-                      album: {
-                          name: 'Sample Album',
-                          images: [{ url: 'https://via.placeholder.com/300x300' }]
-                      },
-                      duration_ms: 180000
-                  }
-              ]
-          }
-      };
+      const results = await spotifyService.search(q, type, limit);
 
       res.json({
           success: true,
-          data: mockResults
+          data: results
       });
   }));
-
-  module.exports = router;
