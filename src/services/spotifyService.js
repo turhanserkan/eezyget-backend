@@ -10,59 +10,65 @@
           this.baseUrl = 'https://api.spotify.com/v1';
       }
 
-      async getAccessToken() {
-          if (this.accessToken && this.tokenExpiry > Date.now()) {
-              return this.accessToken;
-          }
-
-          const clientId = process.env.SPOTIFY_CLIENT_ID;
-          const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-
-          if (!clientId || !clientSecret) {
-              throw new Error('Spotify credentials not configured');
-          }
-
-          try {
-              console.log('=== SPOTIFY TOKEN REQUEST DEBUG ===');
-              console.log('Client ID:', clientId);
-              console.log('Client Secret (first 10 chars):',
-  clientSecret.substring(0, 10) + '...');
-              console.log('Making request to Spotify token endpoint...');
-
-              const response = await axios.post(
-                  'https://accounts.spotify.com/api/token',
-                  'grant_type=client_credentials',
-                  {
-                      headers: {
-                          'Authorization': `Basic
-  ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
-                          'Content-Type': 'application/x-www-form-urlencoded'
-                      }
-                  }
-              );
-
-              console.log('Spotify token response status:', response.status);
-              console.log('Spotify token response data:', response.data);
-
-              this.accessToken = response.data.access_token;
-              this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
-
-              logger.info('Spotify access token obtained successfully');
-              return this.accessToken;
-          } catch (error) {
-              console.log('=== SPOTIFY TOKEN ERROR DEBUG ===');
-              console.log('Error message:', error.message);
-              console.log('Error code:', error.code);
-              console.log('Response status:', error.response?.status);
-              console.log('Response data:', error.response?.data);
-              console.log('Response headers:', error.response?.headers);
-              console.log('Request config:', error.config);
-              console.log('=====================================');
-
-              logger.error('Failed to get Spotify access token:', error.message);
-              throw new Error('Failed to authenticate with Spotify');
-          }
+  async getAccessToken() {
+      if (this.accessToken && this.tokenExpiry > Date.now()) {
+          return this.accessToken;
       }
+
+      const clientId = process.env.SPOTIFY_CLIENT_ID;
+      const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+      if (!clientId || !clientSecret) {
+          throw new Error('Spotify credentials not configured');
+      }
+
+      try {
+          console.log('=== SPOTIFY TOKEN REQUEST DEBUG ===');
+          console.log('Client ID:', clientId);
+          console.log('Client Secret (first 10 chars):', clientSecret.substring(0,
+  10) + '...');
+
+          // Clean credentials - remove any whitespace/newlines
+          const cleanClientId = clientId.trim();
+          const cleanClientSecret = clientSecret.trim();
+
+          const credentials = `${cleanClientId}:${cleanClientSecret}`;
+          const encodedCredentials = Buffer.from(credentials).toString('base64');
+
+          console.log('Credentials string length:', credentials.length);
+          console.log('Base64 encoded length:', encodedCredentials.length);
+          console.log('Base64 (first 20 chars):', encodedCredentials.substring(0, 20)
+   + '...');
+
+          const response = await axios.post(
+              'https://accounts.spotify.com/api/token',
+              'grant_type=client_credentials',
+              {
+                  headers: {
+                      'Authorization': `Basic ${encodedCredentials}`,
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+              }
+          );
+
+          console.log('Spotify token response status:', response.status);
+
+          this.accessToken = response.data.access_token;
+          this.tokenExpiry = Date.now() + (response.data.expires_in * 1000);
+
+          logger.info('Spotify access token obtained successfully');
+          return this.accessToken;
+      } catch (error) {
+          console.log('=== SPOTIFY TOKEN ERROR DEBUG ===');
+          console.log('Error message:', error.message);
+          console.log('Error code:', error.code);
+          console.log('Response status:', error.response?.status);
+          console.log('Response data:', error.response?.data);
+
+          logger.error('Failed to get Spotify access token:', error.message);
+          throw new Error('Failed to authenticate with Spotify');
+      }
+  }
 
       async makeRequest(endpoint) {
           const cacheKey = `spotify:${endpoint}`;
