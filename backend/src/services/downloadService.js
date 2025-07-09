@@ -41,6 +41,11 @@ class DownloadService {
             console.log('Query:', query);
             console.log('Max results:', maxResults);
             
+            // Validate input
+            if (!query || typeof query !== 'string' || query.trim().length === 0) {
+                throw new Error('Invalid search query provided');
+            }
+            
             // Add delay to avoid rate limiting
             await new Promise(resolve => setTimeout(resolve, 1000));
             
@@ -80,18 +85,36 @@ class DownloadService {
                 console.log('First video:', videos[0]);
             }
             
+            if (videos.length === 0) {
+                logger.warn(`No videos found for query: ${query}`);
+                throw new Error('No matching videos found for this search');
+            }
+            
             return videos;
         } catch (error) {
             console.error('YouTube search error details:', error);
-            logger.error('YouTube search failed:', error.message);
+            logger.error('YouTube search failed:', {
+                error: error.message,
+                query: query,
+                stack: error.stack
+            });
             
             // If ytsr fails, try alternative approach
-            if (error.message.includes('bot') || error.message.includes('lockupViewModel') || error.message.includes('Unable to find JSON')) {
+            if (error.message.includes('bot') || 
+                error.message.includes('lockupViewModel') || 
+                error.message.includes('Unable to find JSON') ||
+                error.message.includes('429') ||
+                error.message.includes('rate limit')) {
                 console.log('YouTube API issue detected, using fallback method');
                 return await this.fallbackYouTubeSearch(query, maxResults);
             }
             
-            throw new Error('Failed to search YouTube');
+            // Re-throw with more user-friendly message
+            if (error.message.includes('No matching videos found')) {
+                throw error;
+            }
+            
+            throw new Error('YouTube search temporarily unavailable. Please try again later.');
         }
     }
 
@@ -194,6 +217,16 @@ class DownloadService {
                 console.log('Output path:', outputPath);
                 console.log('Format:', format, 'Quality:', quality);
                 
+                // Validate inputs
+                if (!videoUrl || !outputPath) {
+                    throw new Error('Invalid download parameters provided');
+                }
+                
+                // Set timeout for download
+                const downloadTimeout = setTimeout(() => {
+                    reject(new Error('Download timed out after 5 minutes'));
+                }, 5 * 60 * 1000); // 5 minutes
+                
                 const stream = ytdl(videoUrl, {
                     quality: 'highestaudio',
                     filter: 'audioonly',
@@ -206,8 +239,22 @@ class DownloadService {
 
                 stream.on('error', (err) => {
                     console.error('Stream error:', err);
-                    logger.error(`Stream error: ${err.message}`);
-                    reject(err);
+                    clearTimeout(downloadTimeout);
+                    
+                    // More specific error messages
+                    let errorMessage = 'Failed to download audio from YouTube';
+                    if (err.message.includes('unavailable')) {
+                        errorMessage = 'Video is not available for download';
+                    } else if (err.message.includes('private')) {
+                        errorMessage = 'Video is private and cannot be downloaded';
+                    } else if (err.message.includes('restricted')) {
+                        errorMessage = 'Video is restricted and cannot be downloaded';
+                    } else if (err.message.includes('429')) {
+                        errorMessage = 'YouTube rate limit exceeded. Please try again later';
+                    }
+                    
+                    logger.error(`Stream error: ${err.message}`, { videoUrl, outputPath });
+                    reject(new Error(errorMessage));
                 });
 
                 if (format === 'mp3') {
@@ -227,12 +274,25 @@ class DownloadService {
                         .on('end', () => {
                             console.log(`Download completed: ${outputPath} (${quality}kbps)`);
                             logger.info(`Download completed: ${outputPath} (${quality}kbps)`);
+                            clearTimeout(downloadTimeout);
                             resolve(outputPath);
                         })
                         .on('error', (err) => {
                             console.error(`Download failed: ${err.message}`);
-                            logger.error(`Download failed: ${err.message}`);
-                            reject(err);
+                            logger.error(`Download failed: ${err.message}`, { videoUrl, outputPath });
+                            clearTimeout(downloadTimeout);
+                            
+                            // More specific FFmpeg error messages
+                            let errorMessage = 'Audio processing failed';
+                            if (err.message.includes('codec')) {
+                                errorMessage = 'Audio codec not supported';
+                            } else if (err.message.includes('permission')) {
+                                errorMessage = 'File permission error';
+                            } else if (err.message.includes('space')) {
+                                errorMessage = 'Not enough disk space';
+                            }
+                            
+                            reject(new Error(errorMessage));
                         });
                 } else {
                     const writeStream = fs.createWriteStream(outputPath);

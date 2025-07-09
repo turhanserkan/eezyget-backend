@@ -1570,6 +1570,26 @@ body {
     
     .download-btn {
         justify-content: center;
+        min-height: 48px; /* Touch-friendly */
+        font-size: 1rem;
+    }
+    
+    /* Progress text wrapping */
+    .download-btn, .action-btn {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Mobile-friendly progress messages */
+    @supports (-webkit-line-clamp: 2) {
+        .download-btn {
+            white-space: normal;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
     }
     
     .features {
@@ -1697,5 +1717,24 @@ body {
     .how-to-use,
     .supported-formats {
         padding: 1.5rem;
+    }
+    
+    /* Mobile download progress */
+    .download-btn {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .download-btn i {
+        margin-right: 0.3rem;
+    }
+    
+    /* Mobile notifications */
+    .notification {
+        right: 10px !important;
+        left: 10px !important;
+        width: auto !important;
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem !important;
     }
 }
