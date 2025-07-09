@@ -20,17 +20,19 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          echo "=== Simple debug test ==="
+          echo "=== Debug info ==="
           whoami
           pwd
           
-          echo "=== Check git status ==="
-          find / -name ".git" -type d 2>/dev/null | head -3
+          echo "=== Set CORS_ORIGINS environment variable ==="
+          export CORS_ORIGINS="https://eezyget.com"
           
-          echo "=== PM2 restart without git pull ==="
-          pm2 restart all
+          echo "=== Update PM2 environment ==="
+          pm2 delete all || true
+          pm2 start ecosystem.config.js || pm2 start --name eezyget-backend "npm start"
           
           echo "=== PM2 status ==="
           pm2 status
           
-          echo "=== Success - Basic deployment done ==="
+          echo "=== PM2 logs ==="
+          pm2 logs --lines 3
