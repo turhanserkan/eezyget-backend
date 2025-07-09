@@ -20,10 +20,9 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
-// CORS origins configuration
-const corsOrigins = process.env.CORS_ORIGINS || 'https://eezyget.com';
-const allowedOrigins = [...new Set(corsOrigins.split(',').map(origin => origin.trim()).filter(Boolean))];
-console.log('CORS Origins configured:', allowedOrigins);
+// CORS origins configuration - HARDCODED FIX for duplicate origin issue
+const allowedOrigins = ['https://eezyget.com'];
+console.log('CORS Origins hardcoded fix:', allowedOrigins);
 console.log('Original CORS_ORIGINS env:', process.env.CORS_ORIGINS);
 
 const io = new Server(server, {
