@@ -1,0 +1,350 @@
+2025-07-09T21:21:08.9071123Z Current runner version: '2.325.0'
+2025-07-09T21:21:08.9094993Z ##[group]Runner Image Provisioner
+2025-07-09T21:21:08.9096143Z Hosted Compute Agent
+2025-07-09T21:21:08.9096728Z Version: 20250620.352
+2025-07-09T21:21:08.9097342Z Commit: f262f3aba23b10ea191b2a62bdee1ca4c3d344da
+2025-07-09T21:21:08.9098099Z Build Date: 2025-06-20T19:27:17Z
+2025-07-09T21:21:08.9098703Z ##[endgroup]
+2025-07-09T21:21:08.9099250Z ##[group]Operating System
+2025-07-09T21:21:08.9099829Z Ubuntu
+2025-07-09T21:21:08.9100296Z 24.04.2
+2025-07-09T21:21:08.9100735Z LTS
+2025-07-09T21:21:08.9101219Z ##[endgroup]
+2025-07-09T21:21:08.9101758Z ##[group]Runner Image
+2025-07-09T21:21:08.9102300Z Image: ubuntu-24.04
+2025-07-09T21:21:08.9102850Z Version: 20250629.1.0
+2025-07-09T21:21:08.9103854Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250629.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-07-09T21:21:08.9105592Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250629.1
+2025-07-09T21:21:08.9106622Z ##[endgroup]
+2025-07-09T21:21:08.9107733Z ##[group]GITHUB_TOKEN Permissions
+2025-07-09T21:21:08.9109789Z Contents: read
+2025-07-09T21:21:08.9110346Z Metadata: read
+2025-07-09T21:21:08.9110943Z Packages: read
+2025-07-09T21:21:08.9111454Z ##[endgroup]
+2025-07-09T21:21:08.9113589Z Secret source: Actions
+2025-07-09T21:21:08.9114620Z Prepare workflow directory
+2025-07-09T21:21:08.9517119Z Prepare all required actions
+2025-07-09T21:21:08.9572249Z Getting action download info
+2025-07-09T21:21:09.3121395Z ##[group]Download immutable action package 'actions/checkout@v3'
+2025-07-09T21:21:09.3122426Z Version: 3.6.0
+2025-07-09T21:21:09.3123372Z Digest: sha256:942562b9c7d4b1f2557f1da21f4d3eb4eb4fd01f2ad78b2a6e187d1b193e0a0f
+2025-07-09T21:21:09.3124625Z Source commit SHA: f43a0e5ff2bd294095638e18286ca9a3d1956744
+2025-07-09T21:21:09.3125645Z ##[endgroup]
+2025-07-09T21:21:09.4123918Z Download action repository 'appleboy/ssh-action@v0.1.7' (SHA:d91a1af6f57cd4478ceee14d7705601dafabaa19)
+2025-07-09T21:21:09.8407061Z Complete job name: deploy
+2025-07-09T21:21:09.8854624Z ##[group]Build container for action use: '/home/runner/work/_actions/appleboy/ssh-action/v0.1.7/Dockerfile'.
+2025-07-09T21:21:09.8898481Z ##[command]/usr/bin/docker build -t efd4f4:6baca71c5049419b98f993f2d6d78d0e -f "/home/runner/work/_actions/appleboy/ssh-action/v0.1.7/Dockerfile" "/home/runner/work/_actions/appleboy/ssh-action/v0.1.7"
+2025-07-09T21:21:10.3901780Z #0 building with "default" instance using docker driver
+2025-07-09T21:21:10.3902438Z 
+2025-07-09T21:21:10.3902788Z #1 [internal] load build definition from Dockerfile
+2025-07-09T21:21:10.3903552Z #1 transferring dockerfile: 174B done
+2025-07-09T21:21:10.3904098Z #1 DONE 0.0s
+2025-07-09T21:21:10.3904340Z 
+2025-07-09T21:21:10.3904938Z #2 [auth] appleboy/drone-ssh:pull token for registry-1.docker.io
+2025-07-09T21:21:10.5402248Z #2 DONE 0.0s
+2025-07-09T21:21:10.5402725Z 
+2025-07-09T21:21:10.5403287Z #3 [internal] load metadata for docker.io/appleboy/drone-ssh:1.6.8-linux-amd64
+2025-07-09T21:21:10.6975142Z #3 DONE 0.4s
+2025-07-09T21:21:10.8052926Z 
+2025-07-09T21:21:10.8053739Z #4 [internal] load .dockerignore
+2025-07-09T21:21:10.8055342Z #4 transferring context: 2B done
+2025-07-09T21:21:10.8056260Z #4 DONE 0.0s
+2025-07-09T21:21:10.8056776Z 
+2025-07-09T21:21:10.8057243Z #5 [internal] load build context
+2025-07-09T21:21:10.8058450Z #5 transferring context: 108B done
+2025-07-09T21:21:10.8059354Z #5 DONE 0.0s
+2025-07-09T21:21:10.8059804Z 
+2025-07-09T21:21:10.8061133Z #6 [1/3] FROM docker.io/appleboy/drone-ssh:1.6.8-linux-amd64@sha256:4f39e64876acd5e92db0ed069676cb6bb36f4bee8327b9d118fd693394afaa43
+2025-07-09T21:21:10.8065106Z #6 resolve docker.io/appleboy/drone-ssh:1.6.8-linux-amd64@sha256:4f39e64876acd5e92db0ed069676cb6bb36f4bee8327b9d118fd693394afaa43 done
+2025-07-09T21:21:10.8068781Z #6 extracting sha256:c158987b05517b6f2c5913f3acef1f2182a32345a304fe357e3ace5fadcad715
+2025-07-09T21:21:10.9180084Z #6 extracting sha256:c158987b05517b6f2c5913f3acef1f2182a32345a304fe357e3ace5fadcad715 0.1s done
+2025-07-09T21:21:10.9182169Z #6 sha256:0f38c3727e1a1a3cfcf1962e4b728733602bc9c9622d58bd722264fef40e2054 2.33MB / 2.33MB 0.2s done
+2025-07-09T21:21:10.9183329Z #6 sha256:4f39e64876acd5e92db0ed069676cb6bb36f4bee8327b9d118fd693394afaa43 1.16kB / 1.16kB done
+2025-07-09T21:21:10.9184197Z #6 sha256:cc752cd14614f38f29bc3ee56312fe1d334979af24c0c6a07586a6cf199a82cb 3.93kB / 3.93kB done
+2025-07-09T21:21:10.9185616Z #6 sha256:c158987b05517b6f2c5913f3acef1f2182a32345a304fe357e3ace5fadcad715 3.37MB / 3.37MB 0.1s done
+2025-07-09T21:21:10.9186439Z #6 sha256:c0fe7d5d4ca7205a4c1c2bd8f2cb24a12ac365ea833eb695234e21dbfe366ffb 304.73kB / 304.73kB 0.1s done
+2025-07-09T21:21:10.9187212Z #6 sha256:d6b22262a35636831d6ba10149a8de8a5a2460e6c925109218cf0e38edfc4144 13.21kB / 13.21kB 0.1s done
+2025-07-09T21:21:11.1115185Z #6 extracting sha256:c0fe7d5d4ca7205a4c1c2bd8f2cb24a12ac365ea833eb695234e21dbfe366ffb 0.0s done
+2025-07-09T21:21:11.2559140Z #6 extracting sha256:d6b22262a35636831d6ba10149a8de8a5a2460e6c925109218cf0e38edfc4144
+2025-07-09T21:21:11.3570513Z #6 extracting sha256:d6b22262a35636831d6ba10149a8de8a5a2460e6c925109218cf0e38edfc4144 done
+2025-07-09T21:21:11.3571870Z #6 extracting sha256:0f38c3727e1a1a3cfcf1962e4b728733602bc9c9622d58bd722264fef40e2054 0.0s done
+2025-07-09T21:21:11.3572389Z #6 DONE 0.6s
+2025-07-09T21:21:11.3572603Z 
+2025-07-09T21:21:11.3572796Z #7 [2/3] COPY entrypoint.sh /entrypoint.sh
+2025-07-09T21:21:11.3573132Z #7 DONE 0.0s
+2025-07-09T21:21:11.3573280Z 
+2025-07-09T21:21:11.3573397Z #8 [3/3] RUN chmod +x /entrypoint.sh
+2025-07-09T21:21:11.5202768Z #8 DONE 0.2s
+2025-07-09T21:21:11.6723319Z 
+2025-07-09T21:21:11.6723601Z #9 exporting to image
+2025-07-09T21:21:11.6724119Z #9 exporting layers
+2025-07-09T21:21:12.0120210Z #9 exporting layers 0.5s done
+2025-07-09T21:21:12.0381983Z #9 writing image sha256:4137b97a55f4d667067dc223caff8df4e2e3ff2de05b29ec8f0d91bd67a65f8f done
+2025-07-09T21:21:12.0383086Z #9 naming to docker.io/library/efd4f4:6baca71c5049419b98f993f2d6d78d0e done
+2025-07-09T21:21:12.0383736Z #9 DONE 0.5s
+2025-07-09T21:21:12.0439055Z ##[endgroup]
+2025-07-09T21:21:12.0682573Z ##[group]Run actions/checkout@v3
+2025-07-09T21:21:12.0683122Z with:
+2025-07-09T21:21:12.0683338Z   repository: turhanserkan/eezyget-backend
+2025-07-09T21:21:12.0683763Z   token: ***
+2025-07-09T21:21:12.0683953Z   ssh-strict: true
+2025-07-09T21:21:12.0684150Z   persist-credentials: true
+2025-07-09T21:21:12.0684374Z   clean: true
+2025-07-09T21:21:12.0684569Z   sparse-checkout-cone-mode: true
+2025-07-09T21:21:12.0685016Z   fetch-depth: 1
+2025-07-09T21:21:12.0685195Z   fetch-tags: false
+2025-07-09T21:21:12.0685381Z   lfs: false
+2025-07-09T21:21:12.0685542Z   submodules: false
+2025-07-09T21:21:12.0685732Z   set-safe-directory: true
+2025-07-09T21:21:12.0686176Z ##[endgroup]
+2025-07-09T21:21:12.1525525Z Syncing repository: turhanserkan/eezyget-backend
+2025-07-09T21:21:12.1526833Z ##[group]Getting Git version info
+2025-07-09T21:21:12.1527255Z Working directory is '/home/runner/work/eezyget-backend/eezyget-backend'
+2025-07-09T21:21:12.1527820Z [command]/usr/bin/git version
+2025-07-09T21:21:12.1531503Z git version 2.49.0
+2025-07-09T21:21:12.1557645Z ##[endgroup]
+2025-07-09T21:21:12.1571735Z Temporarily overriding HOME='/home/runner/work/_temp/70a9a291-eb1c-4bdf-b3ed-a9a43ada8820' before making global git config changes
+2025-07-09T21:21:12.1572524Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-09T21:21:12.1575212Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/eezyget-backend/eezyget-backend
+2025-07-09T21:21:12.1606461Z Deleting the contents of '/home/runner/work/eezyget-backend/eezyget-backend'
+2025-07-09T21:21:12.1609937Z ##[group]Initializing the repository
+2025-07-09T21:21:12.1612816Z [command]/usr/bin/git init /home/runner/work/eezyget-backend/eezyget-backend
+2025-07-09T21:21:12.1685046Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-07-09T21:21:12.1685863Z hint: is subject to change. To configure the initial branch name to use in all
+2025-07-09T21:21:12.1686589Z hint: of your new repositories, which will suppress this warning, call:
+2025-07-09T21:21:12.1687043Z hint:
+2025-07-09T21:21:12.1687459Z hint: 	git config --global init.defaultBranch <name>
+2025-07-09T21:21:12.1687973Z hint:
+2025-07-09T21:21:12.1688451Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-07-09T21:21:12.1689260Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-07-09T21:21:12.1689907Z hint:
+2025-07-09T21:21:12.1690217Z hint: 	git branch -m <name>
+2025-07-09T21:21:12.1691171Z Initialized empty Git repository in /home/runner/work/eezyget-backend/eezyget-backend/.git/
+2025-07-09T21:21:12.1699772Z [command]/usr/bin/git remote add origin https://github.com/turhanserkan/eezyget-backend
+2025-07-09T21:21:12.1731256Z ##[endgroup]
+2025-07-09T21:21:12.1731910Z ##[group]Disabling automatic garbage collection
+2025-07-09T21:21:12.1735051Z [command]/usr/bin/git config --local gc.auto 0
+2025-07-09T21:21:12.1761013Z ##[endgroup]
+2025-07-09T21:21:12.1761709Z ##[group]Setting up auth
+2025-07-09T21:21:12.1767412Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-09T21:21:12.1793873Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-09T21:21:12.2079470Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-09T21:21:12.2105762Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-09T21:21:12.2320347Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-07-09T21:21:12.2352127Z ##[endgroup]
+2025-07-09T21:21:12.2352828Z ##[group]Fetching the repository
+2025-07-09T21:21:12.2361739Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +0b810eeafae87e01af6877c2787454a9eecf8cf9:refs/remotes/origin/main
+2025-07-09T21:21:12.5034272Z remote: Enumerating objects: 81, done.        
+2025-07-09T21:21:12.5035280Z remote: Counting objects:   1% (1/81)        
+2025-07-09T21:21:12.5035788Z remote: Counting objects:   2% (2/81)        
+2025-07-09T21:21:12.5036103Z remote: Counting objects:   3% (3/81)        
+2025-07-09T21:21:12.5036397Z remote: Counting objects:   4% (4/81)        
+2025-07-09T21:21:12.5036681Z remote: Counting objects:   6% (5/81)        
+2025-07-09T21:21:12.5036961Z remote: Counting objects:   7% (6/81)        
+2025-07-09T21:21:12.5037242Z remote: Counting objects:   8% (7/81)        
+2025-07-09T21:21:12.5037515Z remote: Counting objects:   9% (8/81)        
+2025-07-09T21:21:12.5037858Z remote: Counting objects:  11% (9/81)        
+2025-07-09T21:21:12.5038148Z remote: Counting objects:  12% (10/81)        
+2025-07-09T21:21:12.5038484Z remote: Counting objects:  13% (11/81)        
+2025-07-09T21:21:12.5038766Z remote: Counting objects:  14% (12/81)        
+2025-07-09T21:21:12.5039049Z remote: Counting objects:  16% (13/81)        
+2025-07-09T21:21:12.5039333Z remote: Counting objects:  17% (14/81)        
+2025-07-09T21:21:12.5039612Z remote: Counting objects:  18% (15/81)        
+2025-07-09T21:21:12.5039895Z remote: Counting objects:  19% (16/81)        
+2025-07-09T21:21:12.5040180Z remote: Counting objects:  20% (17/81)        
+2025-07-09T21:21:12.5040461Z remote: Counting objects:  22% (18/81)        
+2025-07-09T21:21:12.5040746Z remote: Counting objects:  23% (19/81)        
+2025-07-09T21:21:12.5041032Z remote: Counting objects:  24% (20/81)        
+2025-07-09T21:21:12.5041308Z remote: Counting objects:  25% (21/81)        
+2025-07-09T21:21:12.5041594Z remote: Counting objects:  27% (22/81)        
+2025-07-09T21:21:12.5041934Z remote: Counting objects:  28% (23/81)        
+2025-07-09T21:21:12.5042213Z remote: Counting objects:  29% (24/81)        
+2025-07-09T21:21:12.5042720Z remote: Counting objects:  30% (25/81)        
+2025-07-09T21:21:12.5043006Z remote: Counting objects:  32% (26/81)        
+2025-07-09T21:21:12.5043292Z remote: Counting objects:  33% (27/81)        
+2025-07-09T21:21:12.5043572Z remote: Counting objects:  34% (28/81)        
+2025-07-09T21:21:12.5043858Z remote: Counting objects:  35% (29/81)        
+2025-07-09T21:21:12.5044141Z remote: Counting objects:  37% (30/81)        
+2025-07-09T21:21:12.5044421Z remote: Counting objects:  38% (31/81)        
+2025-07-09T21:21:12.5044941Z remote: Counting objects:  39% (32/81)        
+2025-07-09T21:21:12.5045280Z remote: Counting objects:  40% (33/81)        
+2025-07-09T21:21:12.5045564Z remote: Counting objects:  41% (34/81)        
+2025-07-09T21:21:12.5045854Z remote: Counting objects:  43% (35/81)        
+2025-07-09T21:21:12.5046142Z remote: Counting objects:  44% (36/81)        
+2025-07-09T21:21:12.5046424Z remote: Counting objects:  45% (37/81)        
+2025-07-09T21:21:12.5046829Z remote: Counting objects:  46% (38/81)        
+2025-07-09T21:21:12.5047118Z remote: Counting objects:  48% (39/81)        
+2025-07-09T21:21:12.5047400Z remote: Counting objects:  49% (40/81)        
+2025-07-09T21:21:12.5047687Z remote: Counting objects:  50% (41/81)        
+2025-07-09T21:21:12.5047970Z remote: Counting objects:  51% (42/81)        
+2025-07-09T21:21:12.5048252Z remote: Counting objects:  53% (43/81)        
+2025-07-09T21:21:12.5048530Z remote: Counting objects:  54% (44/81)        
+2025-07-09T21:21:12.5048814Z remote: Counting objects:  55% (45/81)        
+2025-07-09T21:21:12.5049096Z remote: Counting objects:  56% (46/81)        
+2025-07-09T21:21:12.5049406Z remote: Counting objects:  58% (47/81)        
+2025-07-09T21:21:12.5049691Z remote: Counting objects:  59% (48/81)        
+2025-07-09T21:21:12.5049982Z remote: Counting objects:  60% (49/81)        
+2025-07-09T21:21:12.5050259Z remote: Counting objects:  61% (50/81)        
+2025-07-09T21:21:12.5050529Z remote: Counting objects:  62% (51/81)        
+2025-07-09T21:21:12.5050961Z remote: Counting objects:  64% (52/81)        
+2025-07-09T21:21:12.5051232Z remote: Counting objects:  65% (53/81)        
+2025-07-09T21:21:12.5051521Z remote: Counting objects:  66% (54/81)        
+2025-07-09T21:21:12.5051798Z remote: Counting objects:  67% (55/81)        
+2025-07-09T21:21:12.5052059Z remote: Counting objects:  69% (56/81)        
+2025-07-09T21:21:12.5052325Z remote: Counting objects:  70% (57/81)        
+2025-07-09T21:21:12.5052595Z remote: Counting objects:  71% (58/81)        
+2025-07-09T21:21:12.5052857Z remote: Counting objects:  72% (59/81)        
+2025-07-09T21:21:12.5053120Z remote: Counting objects:  74% (60/81)        
+2025-07-09T21:21:12.5053386Z remote: Counting objects:  75% (61/81)        
+2025-07-09T21:21:12.5053649Z remote: Counting objects:  76% (62/81)        
+2025-07-09T21:21:12.5053904Z remote: Counting objects:  77% (63/81)        
+2025-07-09T21:21:12.5054170Z remote: Counting objects:  79% (64/81)        
+2025-07-09T21:21:12.5054463Z remote: Counting objects:  80% (65/81)        
+2025-07-09T21:21:12.5054882Z remote: Counting objects:  81% (66/81)        
+2025-07-09T21:21:12.5055153Z remote: Counting objects:  82% (67/81)        
+2025-07-09T21:21:12.5055421Z remote: Counting objects:  83% (68/81)        
+2025-07-09T21:21:12.5055688Z remote: Counting objects:  85% (69/81)        
+2025-07-09T21:21:12.5055944Z remote: Counting objects:  86% (70/81)        
+2025-07-09T21:21:12.5056206Z remote: Counting objects:  87% (71/81)        
+2025-07-09T21:21:12.5056473Z remote: Counting objects:  88% (72/81)        
+2025-07-09T21:21:12.5056729Z remote: Counting objects:  90% (73/81)        
+2025-07-09T21:21:12.5056991Z remote: Counting objects:  91% (74/81)        
+2025-07-09T21:21:12.5057260Z remote: Counting objects:  92% (75/81)        
+2025-07-09T21:21:12.5057538Z remote: Counting objects:  93% (76/81)        
+2025-07-09T21:21:12.5057802Z remote: Counting objects:  95% (77/81)        
+2025-07-09T21:21:12.5058066Z remote: Counting objects:  96% (78/81)        
+2025-07-09T21:21:12.5058571Z remote: Counting objects:  97% (79/81)        
+2025-07-09T21:21:12.5066061Z remote: Counting objects:  98% (80/81)        
+2025-07-09T21:21:12.5066656Z remote: Counting objects: 100% (81/81)        
+2025-07-09T21:21:12.5066986Z remote: Counting objects: 100% (81/81), done.        
+2025-07-09T21:21:12.5067294Z remote: Compressing objects:   1% (1/69)        
+2025-07-09T21:21:12.5067586Z remote: Compressing objects:   2% (2/69)        
+2025-07-09T21:21:12.5067872Z remote: Compressing objects:   4% (3/69)        
+2025-07-09T21:21:12.5068146Z remote: Compressing objects:   5% (4/69)        
+2025-07-09T21:21:12.5068426Z remote: Compressing objects:   7% (5/69)        
+2025-07-09T21:21:12.5068708Z remote: Compressing objects:   8% (6/69)        
+2025-07-09T21:21:12.5068981Z remote: Compressing objects:  10% (7/69)        
+2025-07-09T21:21:12.5069259Z remote: Compressing objects:  11% (8/69)        
+2025-07-09T21:21:12.5069536Z remote: Compressing objects:  13% (9/69)        
+2025-07-09T21:21:12.5076737Z remote: Compressing objects:  14% (10/69)        
+2025-07-09T21:21:12.5080566Z remote: Compressing objects:  15% (11/69)        
+2025-07-09T21:21:12.5083782Z remote: Compressing objects:  17% (12/69)        
+2025-07-09T21:21:12.5088997Z remote: Compressing objects:  18% (13/69)        
+2025-07-09T21:21:12.5089568Z remote: Compressing objects:  20% (14/69)        
+2025-07-09T21:21:12.5090064Z remote: Compressing objects:  21% (15/69)        
+2025-07-09T21:21:12.5090545Z remote: Compressing objects:  23% (16/69)        
+2025-07-09T21:21:12.5091137Z remote: Compressing objects:  24% (17/69)        
+2025-07-09T21:21:12.5092031Z remote: Compressing objects:  26% (18/69)        
+2025-07-09T21:21:12.5092525Z remote: Compressing objects:  27% (19/69)        
+2025-07-09T21:21:12.5092834Z remote: Compressing objects:  28% (20/69)        
+2025-07-09T21:21:12.5093117Z remote: Compressing objects:  30% (21/69)        
+2025-07-09T21:21:12.5093394Z remote: Compressing objects:  31% (22/69)        
+2025-07-09T21:21:12.5093875Z remote: Compressing objects:  33% (23/69)        
+2025-07-09T21:21:12.5098572Z remote: Compressing objects:  34% (24/69)        
+2025-07-09T21:21:12.5107926Z remote: Compressing objects:  36% (25/69)        
+2025-07-09T21:21:12.5109638Z remote: Compressing objects:  37% (26/69)        
+2025-07-09T21:21:12.5193549Z remote: Compressing objects:  39% (27/69)        
+2025-07-09T21:21:12.5194281Z remote: Compressing objects:  40% (28/69)        
+2025-07-09T21:21:12.5195235Z remote: Compressing objects:  42% (29/69)        
+2025-07-09T21:21:12.5196351Z remote: Compressing objects:  43% (30/69)        
+2025-07-09T21:21:12.5197066Z remote: Compressing objects:  44% (31/69)        
+2025-07-09T21:21:12.5197746Z remote: Compressing objects:  46% (32/69)        
+2025-07-09T21:21:12.5198414Z remote: Compressing objects:  47% (33/69)        
+2025-07-09T21:21:12.5199063Z remote: Compressing objects:  49% (34/69)        
+2025-07-09T21:21:12.5199771Z remote: Compressing objects:  50% (35/69)        
+2025-07-09T21:21:12.5200543Z remote: Compressing objects:  52% (36/69)        
+2025-07-09T21:21:12.5200858Z remote: Compressing objects:  53% (37/69)        
+2025-07-09T21:21:12.5201146Z remote: Compressing objects:  55% (38/69)        
+2025-07-09T21:21:12.5201460Z remote: Compressing objects:  56% (39/69)        
+2025-07-09T21:21:12.5201752Z remote: Compressing objects:  57% (40/69)        
+2025-07-09T21:21:12.5202042Z remote: Compressing objects:  59% (41/69)        
+2025-07-09T21:21:12.5202330Z remote: Compressing objects:  60% (42/69)        
+2025-07-09T21:21:12.5202795Z remote: Compressing objects:  62% (43/69)        
+2025-07-09T21:21:12.5203077Z remote: Compressing objects:  63% (44/69)        
+2025-07-09T21:21:12.5203354Z remote: Compressing objects:  65% (45/69)        
+2025-07-09T21:21:12.5203626Z remote: Compressing objects:  66% (46/69)        
+2025-07-09T21:21:12.5203901Z remote: Compressing objects:  68% (47/69)        
+2025-07-09T21:21:12.5204182Z remote: Compressing objects:  69% (48/69)        
+2025-07-09T21:21:12.5204668Z remote: Compressing objects:  71% (49/69)        
+2025-07-09T21:21:12.5205271Z remote: Compressing objects:  72% (50/69)        
+2025-07-09T21:21:12.5205558Z remote: Compressing objects:  73% (51/69)        
+2025-07-09T21:21:12.5205829Z remote: Compressing objects:  75% (52/69)        
+2025-07-09T21:21:12.5206100Z remote: Compressing objects:  76% (53/69)        
+2025-07-09T21:21:12.5206372Z remote: Compressing objects:  78% (54/69)        
+2025-07-09T21:21:12.5206639Z remote: Compressing objects:  79% (55/69)        
+2025-07-09T21:21:12.5207016Z remote: Compressing objects:  81% (56/69)        
+2025-07-09T21:21:12.5207291Z remote: Compressing objects:  82% (57/69)        
+2025-07-09T21:21:12.5207558Z remote: Compressing objects:  84% (58/69)        
+2025-07-09T21:21:12.5207830Z remote: Compressing objects:  85% (59/69)        
+2025-07-09T21:21:12.5208101Z remote: Compressing objects:  86% (60/69)        
+2025-07-09T21:21:12.5208387Z remote: Compressing objects:  88% (61/69)        
+2025-07-09T21:21:12.5208692Z remote: Compressing objects:  89% (62/69)        
+2025-07-09T21:21:12.5208974Z remote: Compressing objects:  91% (63/69)        
+2025-07-09T21:21:12.5209252Z remote: Compressing objects:  92% (64/69)        
+2025-07-09T21:21:12.5209520Z remote: Compressing objects:  94% (65/69)        
+2025-07-09T21:21:12.5209797Z remote: Compressing objects:  95% (66/69)        
+2025-07-09T21:21:12.5210074Z remote: Compressing objects:  97% (67/69)        
+2025-07-09T21:21:12.5210348Z remote: Compressing objects:  98% (68/69)        
+2025-07-09T21:21:12.5210615Z remote: Compressing objects: 100% (69/69)        
+2025-07-09T21:21:12.5210925Z remote: Compressing objects: 100% (69/69), done.        
+2025-07-09T21:21:14.2350711Z remote: Total 81 (delta 17), reused 59 (delta 9), pack-reused 0 (from 0)        
+2025-07-09T21:21:14.2526284Z From https://github.com/turhanserkan/eezyget-backend
+2025-07-09T21:21:14.2527156Z  * [new ref]         0b810eeafae87e01af6877c2787454a9eecf8cf9 -> origin/main
+2025-07-09T21:21:14.2555704Z ##[endgroup]
+2025-07-09T21:21:14.2556332Z ##[group]Determining the checkout info
+2025-07-09T21:21:14.2559253Z ##[endgroup]
+2025-07-09T21:21:14.2559827Z ##[group]Checking out the ref
+2025-07-09T21:21:14.2562954Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-07-09T21:21:14.4230786Z Switched to a new branch 'main'
+2025-07-09T21:21:14.4232923Z branch 'main' set up to track 'origin/main'.
+2025-07-09T21:21:14.4240096Z ##[endgroup]
+2025-07-09T21:21:14.4276652Z [command]/usr/bin/git log -1 --format='%H'
+2025-07-09T21:21:14.4297592Z '0b810eeafae87e01af6877c2787454a9eecf8cf9'
+2025-07-09T21:21:14.4509375Z ##[group]Run appleboy/ssh-action@v0.1.7
+2025-07-09T21:21:14.4509663Z with:
+2025-07-09T21:21:14.4509938Z   host: ***
+2025-07-09T21:21:14.4510116Z   username: ***
+2025-07-09T21:21:14.4511418Z   script: echo "=== Finding Node.js app directory ==="
+find / -name "package.json" -path "*/eezyget*" 2>/dev/null | head -5
+find / -name "server.js" 2>/dev/null | head -5
+find / -name "*eezyget*" -type d 2>/dev/null | head -5
+
+echo "=== PM2 status ==="
+pm2 status
+
+echo "=== Trying common directories ==="
+for dir in /var/www/api /home/node /***/api /opt/app /home/turhans; do
+  if [ -d "$dir" ]; then
+    echo "Found directory: $dir"
+    ls -la "$dir" | head -10
+  fi
+done
+2025-07-09T21:21:14.4512720Z   port: 22
+2025-07-09T21:21:14.4512885Z   sync: false
+2025-07-09T21:21:14.4513064Z   use_insecure_cipher: false
+2025-07-09T21:21:14.4513266Z   timeout: 30s
+2025-07-09T21:21:14.4513438Z   command_timeout: 10m
+2025-07-09T21:21:14.4513634Z   proxy_port: 22
+2025-07-09T21:21:14.4513844Z   proxy_timeout: 30s
+2025-07-09T21:21:14.4514041Z   proxy_use_insecure_cipher: false
+2025-07-09T21:21:14.4514275Z   script_stop: false
+2025-07-09T21:21:14.4514457Z   debug: false
+2025-07-09T21:21:14.4514622Z ##[endgroup]
+2025-07-09T21:21:14.4605741Z ##[command]/usr/bin/docker run --name efd4f46baca71c5049419b98f993f2d6d78d0e_509217 --label efd4f4 --workdir /github/workspace --rm -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_SCRIPT" -e "INPUT_PORT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_DEBUG" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/eezyget-backend/eezyget-backend":"/github/workspace" efd4f4:6baca71c5049419b98f993f2d6d78d0e
+2025-07-09T21:21:14.6481201Z 2025/07/09 21:21:14 Error: can't connect without a private SSH key or password
+2025-07-09T21:21:14.7278382Z Post job cleanup.
+2025-07-09T21:21:14.7985398Z [command]/usr/bin/git version
+2025-07-09T21:21:14.8019481Z git version 2.49.0
+2025-07-09T21:21:14.8063701Z Temporarily overriding HOME='/home/runner/work/_temp/e73ebedd-c6a2-42c8-a4d8-62fe128c0c37' before making global git config changes
+2025-07-09T21:21:14.8065148Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-09T21:21:14.8067773Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/eezyget-backend/eezyget-backend
+2025-07-09T21:21:14.8097727Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-09T21:21:14.8124892Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-09T21:21:14.8341095Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-09T21:21:14.8362268Z http.https://github.com/.extraheader
+2025-07-09T21:21:14.8373111Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-07-09T21:21:14.8400707Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-09T21:21:14.8713352Z Cleaning up orphan processes
+:!
+[C
+[A
