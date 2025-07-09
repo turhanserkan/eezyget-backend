@@ -18,7 +18,7 @@ jobs:
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
         script: |
           echo "=== Finding Node.js app directory ==="
           find / -name "package.json" -path "*/eezyget*" 2>/dev/null | head -5
