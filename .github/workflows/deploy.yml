@@ -20,29 +20,17 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          echo "=== Finding eezyget-backend directory ==="
-          APP_DIR=$(find / -name "eezyget-backend" -type d 2>/dev/null | head -1)
-          echo "Found app directory: $APP_DIR"
+          echo "=== Simple debug test ==="
+          whoami
+          pwd
           
-          if [ -d "$APP_DIR/backend" ]; then
-            echo "=== Entering backend directory ==="
-            cd "$APP_DIR/backend"
-            pwd
-            
-            echo "=== Git pull latest code ==="
-            git pull origin main
-            
-            echo "=== Install dependencies ==="
-            npm install
-            
-            echo "=== Restart PM2 ==="
-            pm2 restart all
-            
-            echo "=== PM2 status after restart ==="
-            pm2 status
-            
-            echo "=== Check logs ==="
-            pm2 logs --lines 3
-          else
-            echo "Backend directory not found in $APP_DIR"
-          fi
+          echo "=== Check git status ==="
+          find / -name ".git" -type d 2>/dev/null | head -3
+          
+          echo "=== PM2 restart without git pull ==="
+          pm2 restart all
+          
+          echo "=== PM2 status ==="
+          pm2 status
+          
+          echo "=== Success - Basic deployment done ==="
