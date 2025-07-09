@@ -14,6 +14,7 @@ const spotifyRoutes = require('./routes/spotify');
 const youtubeRoutes = require('./routes/youtube');
 const { errorHandler } = require('./middleware/errorHandler');
 const { requestLogger } = require('./middleware/requestLogger');
+const cacheService = require('./services/cacheService');
 
 dotenv.config();
 
@@ -76,14 +77,44 @@ app.use(requestLogger);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.json({
+    const healthData = {
         status: 'OK',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         memory: process.memoryUsage(),
         version: process.env.npm_package_version || '1.0.0'
-    });
+    };
+    
+    // Add cache stats in development
+    if (process.env.NODE_ENV !== 'production') {
+        healthData.cache = cacheService.getStats();
+    }
+    
+    res.json(healthData);
 });
+
+// Cache management endpoints (development only)
+if (process.env.NODE_ENV !== 'production') {
+    app.get('/cache/stats', (req, res) => {
+        res.json({
+            success: true,
+            data: cacheService.getStats()
+        });
+    });
+    
+    app.post('/cache/clear', (req, res) => {
+        const { type } = req.body;
+        if (type) {
+            cacheService.clear(type);
+        } else {
+            cacheService.clearAll();
+        }
+        res.json({
+            success: true,
+            message: `Cache ${type || 'all'} cleared`
+        });
+    });
+}
 
 // API routes
 app.use('/api/spotify', spotifyRoutes);

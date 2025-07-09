@@ -9,6 +9,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const NodeID3 = require('node-id3');
 const logger = require('../utils/logger');
 const spotifyService = require('./spotifyService');
+const cacheService = require('./cacheService');
 
 class DownloadService {
     constructor() {
@@ -44,6 +45,15 @@ class DownloadService {
             // Validate input
             if (!query || typeof query !== 'string' || query.trim().length === 0) {
                 throw new Error('Invalid search query provided');
+            }
+            
+            // Check cache first
+            const cacheKey = `${query}_${maxResults}`;
+            const cachedResults = cacheService.getCachedSearch(cacheKey);
+            if (cachedResults) {
+                console.log('Cache hit for YouTube search:', query);
+                logger.debug(`YouTube search cache hit: ${query}`);
+                return cachedResults;
             }
             
             // Add delay to avoid rate limiting
@@ -89,6 +99,10 @@ class DownloadService {
                 logger.warn(`No videos found for query: ${query}`);
                 throw new Error('No matching videos found for this search');
             }
+            
+            // Cache the results
+            cacheService.setCachedSearch(cacheKey, videos);
+            logger.debug(`YouTube search cached: ${query}`);
             
             return videos;
         } catch (error) {
