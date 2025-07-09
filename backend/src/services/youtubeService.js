@@ -1,4 +1,5 @@
 const ytdl = require('@distube/ytdl-core');
+const youtubedl = require('youtube-dl-exec');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -22,37 +23,80 @@ class YouTubeService {
         });
     }
 
+    // Emit progress updates via Socket.IO
+    emitProgress(jobId, data) {
+        if (global.io) {
+            global.io.to(`download-${jobId}`).emit('download-progress', {
+                jobId,
+                ...data
+            });
+        }
+    }
+
     async getVideoInfo(url) {
         try {
-            const info = await ytdl.getInfo(url, {
-                requestOptions: {
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            // Try yt-dlp first (more reliable)
+            try {
+                const info = await youtubedl(url, {
+                    dumpSingleJson: true,
+                    noWarnings: true,
+                    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                });
+                
+                return {
+                    id: info.id,
+                    title: info.title,
+                    description: info.description,
+                    lengthSeconds: parseInt(info.duration) || 0,
+                    viewCount: parseInt(info.view_count) || 0,
+                    author: {
+                        id: info.uploader_id,
+                        name: info.uploader || info.channel,
+                        user: info.uploader,
+                        channelUrl: info.uploader_url || info.channel_url,
+                        userUrl: info.uploader_url
+                    },
+                    uploadDate: info.upload_date,
+                    thumbnails: info.thumbnails || [],
+                    keywords: info.tags || [],
+                    category: info.category,
+                    isLiveContent: info.is_live,
+                    url: info.webpage_url
+                };
+            } catch (ytdlpError) {
+                logger.warn('yt-dlp failed, trying ytdl-core...', ytdlpError.message);
+                
+                // Fallback to ytdl-core
+                const info = await ytdl.getInfo(url, {
+                    requestOptions: {
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                        }
                     }
-                }
-            });
-            const videoDetails = info.videoDetails;
-            
-            return {
-                id: videoDetails.videoId,
-                title: videoDetails.title,
-                description: videoDetails.description,
-                lengthSeconds: parseInt(videoDetails.lengthSeconds),
-                viewCount: parseInt(videoDetails.viewCount),
-                author: {
-                    id: videoDetails.author.id,
-                    name: videoDetails.author.name,
-                    user: videoDetails.author.user,
-                    channelUrl: videoDetails.author.channel_url,
-                    userUrl: videoDetails.author.user_url
-                },
-                uploadDate: videoDetails.uploadDate,
-                thumbnails: videoDetails.thumbnails,
-                keywords: videoDetails.keywords,
-                category: videoDetails.category,
-                isLiveContent: videoDetails.isLiveContent,
-                url: videoDetails.video_url
-            };
+                });
+                const videoDetails = info.videoDetails;
+                
+                return {
+                    id: videoDetails.videoId,
+                    title: videoDetails.title,
+                    description: videoDetails.description,
+                    lengthSeconds: parseInt(videoDetails.lengthSeconds),
+                    viewCount: parseInt(videoDetails.viewCount),
+                    author: {
+                        id: videoDetails.author.id,
+                        name: videoDetails.author.name,
+                        user: videoDetails.author.user,
+                        channelUrl: videoDetails.author.channel_url,
+                        userUrl: videoDetails.author.user_url
+                    },
+                    uploadDate: videoDetails.uploadDate,
+                    thumbnails: videoDetails.thumbnails,
+                    keywords: videoDetails.keywords,
+                    category: videoDetails.category,
+                    isLiveContent: videoDetails.isLiveContent,
+                    url: videoDetails.video_url
+                };
+            }
         } catch (error) {
             logger.error('Failed to get YouTube video info:', error.message);
             throw new Error('Failed to get video information');
@@ -64,42 +108,50 @@ class YouTubeService {
         
         try {
             // Update status
-            this.activeDownloads.set(jobId, {
+            const initialStatus = {
                 status: 'processing',
                 progress: 0,
                 message: 'Getting video information...'
-            });
+            };
+            this.activeDownloads.set(jobId, initialStatus);
+            this.emitProgress(jobId, initialStatus);
 
             // Get video info
             const videoInfo = await this.getVideoInfo(url);
             
             // Update status
-            this.activeDownloads.set(jobId, {
+            const prepareStatus = {
                 status: 'processing',
                 progress: 25,
                 message: 'Preparing download...'
-            });
+            };
+            this.activeDownloads.set(jobId, prepareStatus);
+            this.emitProgress(jobId, prepareStatus);
 
             // Create filename
             const filename = sanitize(`${videoInfo.title}.${format}`);
             const outputPath = path.join(this.downloadPath, filename);
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const downloadStatus = {
                 status: 'downloading',
                 progress: 50,
                 message: 'Downloading video...'
-            });
+            };
+            this.activeDownloads.set(jobId, downloadStatus);
+            this.emitProgress(jobId, downloadStatus);
 
             // Download video
             await this.downloadFromYouTube(url, outputPath, format, quality);
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const metadataStatus = {
                 status: 'processing',
                 progress: 75,
                 message: 'Adding metadata...'
-            });
+            };
+            this.activeDownloads.set(jobId, metadataStatus);
+            this.emitProgress(jobId, metadataStatus);
 
             // Add metadata
             await this.addMetadata(outputPath, {
@@ -111,14 +163,16 @@ class YouTubeService {
             });
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const completedStatus = {
                 status: 'completed',
                 progress: 100,
                 message: 'Download completed',
                 filename: filename,
                 filePath: outputPath,
                 fileSize: fs.statSync(outputPath).size
-            });
+            };
+            this.activeDownloads.set(jobId, completedStatus);
+            this.emitProgress(jobId, completedStatus);
 
             // Add to history
             this.downloadHistory.unshift({
@@ -148,11 +202,13 @@ class YouTubeService {
         } catch (error) {
             logger.error(`YouTube download failed for job ${jobId}:`, error.message);
             
-            this.activeDownloads.set(jobId, {
+            const errorStatus = {
                 status: 'failed',
                 progress: 0,
                 message: error.message
-            });
+            };
+            this.activeDownloads.set(jobId, errorStatus);
+            this.emitProgress(jobId, errorStatus);
 
             throw error;
         }
@@ -161,6 +217,38 @@ class YouTubeService {
     async downloadFromYouTube(videoUrl, outputPath, format = 'mp3', quality = '320') {
         return new Promise(async (resolve, reject) => {
             try {
+                // Set timeout for download
+                const downloadTimeout = setTimeout(() => {
+                    reject(new Error('Download timed out after 5 minutes'));
+                }, 5 * 60 * 1000); // 5 minutes
+                
+                // Try yt-dlp first (more reliable)
+                try {
+                    console.log('Trying yt-dlp download...');
+                    
+                    const options = {
+                        output: outputPath,
+                        format: format === 'mp3' ? 'bestaudio[ext=m4a]/bestaudio' : 'best[ext=mp4]',
+                        extractAudio: format === 'mp3',
+                        audioFormat: format === 'mp3' ? 'mp3' : undefined,
+                        audioQuality: format === 'mp3' ? quality : undefined,
+                        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    };
+                    
+                    await youtubedl(videoUrl, options);
+                    
+                    console.log(`yt-dlp download completed: ${outputPath}`);
+                    logger.info(`yt-dlp download completed: ${outputPath}`);
+                    clearTimeout(downloadTimeout);
+                    resolve(outputPath);
+                    return;
+                } catch (ytdlpError) {
+                    console.log('yt-dlp download failed, trying ytdl-core...', ytdlpError.message);
+                }
+                
+                // Fallback to ytdl-core
+                console.log('Trying ytdl-core download...');
+                
                 // Determine if this is video or audio download
                 const isVideoFormat = ['mp4', 'webm', 'avi'].includes(format);
                 const isAudioQuality = ['64', '128', '192', '256', '320'].includes(quality);
@@ -182,11 +270,13 @@ class YouTubeService {
                     
                     writeStream.on('finish', () => {
                         logger.info(`YouTube video download completed: ${outputPath} (${quality}p)`);
+                        clearTimeout(downloadTimeout);
                         resolve(outputPath);
                     });
                     
                     writeStream.on('error', (err) => {
                         logger.error(`YouTube video download failed: ${err.message}`);
+                        clearTimeout(downloadTimeout);
                         reject(err);
                     });
                     
@@ -219,10 +309,12 @@ class YouTubeService {
                         })
                         .on('end', () => {
                             logger.info(`YouTube download completed: ${outputPath} (${quality}kbps)`);
+                            clearTimeout(downloadTimeout);
                             resolve(outputPath);
                         })
                         .on('error', (err) => {
                             logger.error(`YouTube download failed: ${err.message}`);
+                            clearTimeout(downloadTimeout);
                             reject(err);
                         });
                 } else {
@@ -232,11 +324,13 @@ class YouTubeService {
                     
                     writeStream.on('finish', () => {
                         logger.info(`Download completed: ${outputPath}`);
+                        clearTimeout(downloadTimeout);
                         resolve(outputPath);
                     });
                     
                     writeStream.on('error', (err) => {
                         logger.error(`Download failed: ${err.message}`);
+                        clearTimeout(downloadTimeout);
                         reject(err);
                     });
                 }
