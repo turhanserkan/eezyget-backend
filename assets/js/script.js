@@ -358,7 +358,7 @@ async function handleDownload() {
         }
 
         // Make API request
-        const response = await fetch(`http://31.97.181.105:3001${endpoint}`, {
+        const response = await fetch(`https://api.eezyget.com${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -386,7 +386,7 @@ async function handleDownload() {
             if (urlType === 'track' || urlType === 'youtube') {
                 // Create download link
                 const downloadLink = document.createElement('a');
-                downloadLink.href = `http://31.97.181.105:3001${data.data.downloadUrl}`;
+                downloadLink.href = `https://api.eezyget.com${data.data.downloadUrl}`;
                 downloadLink.download = data.data.filename;
                 downloadLink.style.display = 'none';
                 document.body.appendChild(downloadLink);
@@ -519,7 +519,7 @@ function showDownloadLink(data) {
                     ${data.totalTracks ? `<p><strong>${currentLang === 'tr' ? 'Toplam Şarkı:' : 'Total Tracks:'}</strong> ${data.completedTracks}/${data.totalTracks}</p>` : ''}
                 </div>
                 <div class="download-actions">
-                    <a href="http://31.97.181.105:3001${data.downloadUrl}" download="${data.filename}" class="download-link">
+                    <a href="https://api.eezyget.com${data.downloadUrl}" download="${data.filename}" class="download-link">
                         <i class="fas fa-download"></i>
                         ${currentLang === 'tr' ? 'İndir' : 'Download'}
                     </a>
@@ -595,7 +595,7 @@ function closeModal() {
 }
 
 // API Configuration
-const API_BASE_URL = 'http://31.97.181.105:3001';
+const API_BASE_URL = 'https://api.eezyget.com';
 
 // Health check
 async function checkBackendHealth() {
