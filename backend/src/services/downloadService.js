@@ -25,6 +25,16 @@ class DownloadService {
         });
     }
 
+    // Emit progress updates via Socket.IO
+    emitProgress(jobId, data) {
+        if (global.io) {
+            global.io.to(`download-${jobId}`).emit('download-progress', {
+                jobId,
+                ...data
+            });
+        }
+    }
+
     async searchYouTube(query, maxResults = 5) {
         try {
             console.log('=== YOUTUBE SEARCH DEBUG ===');
@@ -292,22 +302,26 @@ class DownloadService {
         
         try {
             // Update status
-            this.activeDownloads.set(jobId, {
+            const initialStatus = {
                 status: 'processing',
                 progress: 0,
                 message: 'Getting track information...'
-            });
+            };
+            this.activeDownloads.set(jobId, initialStatus);
+            this.emitProgress(jobId, initialStatus);
 
             // Parse Spotify URL and get track data
             const parsed = await spotifyService.parseSpotifyUrlAndGetData(spotifyUrl);
             const track = parsed.data;
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const searchStatus = {
                 status: 'processing',
                 progress: 25,
                 message: 'Searching for audio source...'
-            });
+            };
+            this.activeDownloads.set(jobId, searchStatus);
+            this.emitProgress(jobId, searchStatus);
 
             // Find best YouTube match
             const youtubeVideo = await this.findBestMatch(track);
@@ -318,21 +332,25 @@ class DownloadService {
             const outputPath = path.join(this.downloadPath, filename);
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const downloadStatus = {
                 status: 'downloading',
                 progress: 50,
                 message: 'Downloading audio...'
-            });
+            };
+            this.activeDownloads.set(jobId, downloadStatus);
+            this.emitProgress(jobId, downloadStatus);
 
             // Download from YouTube
             await this.downloadFromYouTube(youtubeVideo.url, outputPath, format, quality);
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const metadataStatus = {
                 status: 'processing',
                 progress: 75,
                 message: 'Adding metadata...'
-            });
+            };
+            this.activeDownloads.set(jobId, metadataStatus);
+            this.emitProgress(jobId, metadataStatus);
 
             // Add metadata
             await this.addMetadata(outputPath, {
@@ -344,14 +362,16 @@ class DownloadService {
             });
 
             // Update status
-            this.activeDownloads.set(jobId, {
+            const completedStatus = {
                 status: 'completed',
                 progress: 100,
                 message: 'Download completed',
                 filename: filename,
                 filePath: outputPath,
                 fileSize: fs.statSync(outputPath).size
-            });
+            };
+            this.activeDownloads.set(jobId, completedStatus);
+            this.emitProgress(jobId, completedStatus);
 
             // Add to history
             this.downloadHistory.unshift({
@@ -377,11 +397,13 @@ class DownloadService {
         } catch (error) {
             logger.error(`Download failed for job ${jobId}:`, error.message);
             
-            this.activeDownloads.set(jobId, {
+            const errorStatus = {
                 status: 'failed',
                 progress: 0,
                 message: error.message
-            });
+            };
+            this.activeDownloads.set(jobId, errorStatus);
+            this.emitProgress(jobId, errorStatus);
 
             throw error;
         }

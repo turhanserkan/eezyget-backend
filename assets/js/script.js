@@ -173,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 downloadBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + 
                     (currentLang === 'tr' ? 'Sunucu Offline' : 'Server Offline');
             }
+        } else {
+            // Initialize Socket.IO connection
+            initializeSocket();
         }
     });
 });
@@ -378,8 +381,14 @@ async function handleDownload() {
         const data = await response.json();
 
         if (data.success) {
+            // Set active download ID and join Socket.IO room
+            activeDownloadId = data.data.jobId;
+            if (socket && socket.connected) {
+                socket.emit('join-download', activeDownloadId);
+            }
+            
             // Show success message
-            const successMsg = currentLang === 'tr' ? 'İndirme başarılı!' : 'Download successful!';
+            const successMsg = currentLang === 'tr' ? 'İndirme başlatıldı!' : 'Download started!';
             showNotification(successMsg, 'success');
             
             // If it's a single track or YouTube video, start download immediately
@@ -596,6 +605,86 @@ function closeModal() {
 
 // API Configuration
 const API_BASE_URL = 'https://api.eezyget.com';
+
+// Socket.IO Configuration
+let socket = null;
+let activeDownloadId = null;
+
+// Initialize Socket.IO connection
+function initializeSocket() {
+    if (socket) return;
+    
+    socket = io(API_BASE_URL, {
+        transports: ['websocket', 'polling']
+    });
+    
+    socket.on('connect', () => {
+        console.log('Socket.IO connected');
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('Socket.IO disconnected');
+    });
+    
+    socket.on('download-progress', (data) => {
+        updateDownloadProgress(data);
+    });
+}
+
+// Update download progress
+function updateDownloadProgress(data) {
+    const { jobId, status, progress, message, filename, fileSize } = data;
+    
+    // Update download button if this is the active download
+    if (activeDownloadId === jobId && downloadBtn) {
+        const currentLang = localStorage.getItem('selectedLanguage') || 'tr';
+        
+        if (status === 'completed') {
+            downloadBtn.innerHTML = `<i class="fas fa-check"></i> ${currentLang === 'tr' ? 'Tamamlandı' : 'Completed'}`;
+            downloadBtn.disabled = false;
+            activeDownloadId = null;
+            
+            // Show success notification
+            showNotification(
+                currentLang === 'tr' ? 'İndirme tamamlandı!' : 'Download completed!',
+                'success'
+            );
+        } else if (status === 'failed') {
+            downloadBtn.innerHTML = `<i class="fas fa-times"></i> ${currentLang === 'tr' ? 'Başarısız' : 'Failed'}`;
+            downloadBtn.disabled = false;
+            activeDownloadId = null;
+            
+            // Show error notification
+            showNotification(message || 'Download failed', 'error');
+        } else {
+            // Show progress
+            downloadBtn.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i> 
+                ${message} (${progress}%)
+            `;
+            downloadBtn.disabled = true;
+        }
+    }
+    
+    // Update process button if visible
+    if (activeDownloadId === jobId && processBtn) {
+        const currentLang = localStorage.getItem('selectedLanguage') || 'tr';
+        
+        if (status === 'completed') {
+            processBtn.innerHTML = `<i class="fas fa-check"></i> ${currentLang === 'tr' ? 'Tamamlandı' : 'Completed'}`;
+            processBtn.disabled = false;
+        } else if (status === 'failed') {
+            processBtn.innerHTML = `<i class="fas fa-times"></i> ${currentLang === 'tr' ? 'Başarısız' : 'Failed'}`;
+            processBtn.disabled = false;
+        } else {
+            processBtn.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i> 
+                ${message} (${progress}%)
+            `;
+            processBtn.disabled = true;
+        }
+    }
+}
 
 // Health check
 async function checkBackendHealth() {
@@ -885,8 +974,14 @@ async function handleDownloadWithOptions() {
         const data = await response.json();
 
         if (data.success) {
+            // Set active download ID and join Socket.IO room
+            activeDownloadId = data.data.jobId;
+            if (socket && socket.connected) {
+                socket.emit('join-download', activeDownloadId);
+            }
+            
             showNotification(
-                currentLang === 'tr' ? 'İndirme başarılı!' : 'Download successful!', 
+                currentLang === 'tr' ? 'İndirme başlatıldı!' : 'Download started!', 
                 'success'
             );
             
