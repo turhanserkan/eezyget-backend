@@ -20,8 +20,18 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
-          cd /var/www/api
-          git pull origin main
-          npm install
-          pm2 restart all
+          echo "=== Finding Node.js app directory ==="
+          find / -name "package.json" -path "*/eezyget*" 2>/dev/null | head -5
+          find / -name "server.js" 2>/dev/null | head -5
+          find / -name "*eezyget*" -type d 2>/dev/null | head -5
+          
+          echo "=== PM2 status ==="
           pm2 status
+          
+          echo "=== Trying common directories ==="
+          for dir in /var/www/api /home/node /root/api /opt/app /home/turhans; do
+            if [ -d "$dir" ]; then
+              echo "Found directory: $dir"
+              ls -la "$dir" | head -10
+            fi
+          done
