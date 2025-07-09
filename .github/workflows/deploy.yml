@@ -20,19 +20,27 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          echo "=== Debug info ==="
-          whoami
-          pwd
+          echo "=== Find working directory ==="
+          APP_DIR=$(find / -name "eezyget-backend" -type d 2>/dev/null | head -1)
+          echo "App directory: $APP_DIR"
           
-          echo "=== Set CORS_ORIGINS environment variable ==="
-          export CORS_ORIGINS="https://eezyget.com"
-          
-          echo "=== Update PM2 environment ==="
-          pm2 delete all || true
-          pm2 start ecosystem.config.js || pm2 start --name eezyget-backend "npm start"
-          
-          echo "=== PM2 status ==="
-          pm2 status
-          
-          echo "=== PM2 logs ==="
-          pm2 logs --lines 3
+          if [ -d "$APP_DIR/backend" ]; then
+            echo "=== Entering backend directory ==="
+            cd "$APP_DIR/backend"
+            pwd
+            ls -la
+            
+            echo "=== Git status ==="
+            git status
+            
+            echo "=== Git pull ==="
+            git pull origin main || echo "Git pull failed"
+            
+            echo "=== PM2 restart ==="
+            pm2 restart all
+            
+            echo "=== Check server.js for CORS fix ==="
+            grep -n "hardcoded" src/server.js || echo "CORS fix not found"
+          else
+            echo "Backend directory not found"
+          fi
