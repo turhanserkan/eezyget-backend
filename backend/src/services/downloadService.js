@@ -1,5 +1,6 @@
 const ytdl = require('@distube/ytdl-core');
 const ytsr = require('ytsr');
+const youtubedl = require('youtube-dl-exec');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -56,6 +57,41 @@ class DownloadService {
                 return cachedResults;
             }
             
+            // Try yt-dlp search first (more reliable)
+            try {
+                console.log('Trying yt-dlp search...');
+                const searchUrl = `ytsearch${maxResults}:${query}`;
+                const searchResults = await youtubedl(searchUrl, {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    extractFlat: true,
+                    format: 'best[ext=mp4]',
+                    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                });
+                
+                const videos = searchResults.entries ? searchResults.entries.map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    duration: item.duration || '0:00',
+                    url: `https://www.youtube.com/watch?v=${item.id}`,
+                    thumbnail: item.thumbnail,
+                    views: item.view_count || 0,
+                    uploadDate: item.upload_date
+                })) : [];
+                
+                console.log('yt-dlp search results:', videos.length);
+                if (videos.length > 0) {
+                    // Cache the results
+                    cacheService.setCachedSearch(cacheKey, videos);
+                    logger.debug(`YouTube search cached via yt-dlp: ${query}`);
+                    return videos;
+                }
+            } catch (ytdlpError) {
+                console.log('yt-dlp search failed, trying ytsr...', ytdlpError.message);
+            }
+            
+            // Fallback to ytsr
+            console.log('Trying ytsr search...');
             // Add delay to avoid rate limiting
             await new Promise(resolve => setTimeout(resolve, 1000));
             
@@ -75,7 +111,7 @@ class DownloadService {
                 }
             });
             
-            console.log('Search results found:', searchResults.items.length);
+            console.log('ytsr search results found:', searchResults.items.length);
             console.log('Video items:', searchResults.items.filter(item => item.type === 'video').length);
             
             const videos = searchResults.items
@@ -102,7 +138,7 @@ class DownloadService {
             
             // Cache the results
             cacheService.setCachedSearch(cacheKey, videos);
-            logger.debug(`YouTube search cached: ${query}`);
+            logger.debug(`YouTube search cached via ytsr: ${query}`);
             
             return videos;
         } catch (error) {
@@ -112,16 +148,6 @@ class DownloadService {
                 query: query,
                 stack: error.stack
             });
-            
-            // If ytsr fails, try alternative approach
-            if (error.message.includes('bot') || 
-                error.message.includes('lockupViewModel') || 
-                error.message.includes('Unable to find JSON') ||
-                error.message.includes('429') ||
-                error.message.includes('rate limit')) {
-                console.log('YouTube API issue detected, using fallback method');
-                return await this.fallbackYouTubeSearch(query, maxResults);
-            }
             
             // Re-throw with more user-friendly message
             if (error.message.includes('No matching videos found')) {
@@ -214,7 +240,7 @@ class DownloadService {
     }
 
     async downloadFromYouTube(videoUrl, outputPath, format = 'mp3', quality = '320') {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 console.log('=== YOUTUBE DOWNLOAD DEBUG ===');
                 console.log('Video URL:', videoUrl);
@@ -231,6 +257,32 @@ class DownloadService {
                     reject(new Error('Download timed out after 5 minutes'));
                 }, 5 * 60 * 1000); // 5 minutes
                 
+                // Try yt-dlp first (more reliable)
+                try {
+                    console.log('Trying yt-dlp download...');
+                    
+                    const options = {
+                        output: outputPath,
+                        format: format === 'mp3' ? 'bestaudio[ext=m4a]/bestaudio' : 'best[ext=mp4]',
+                        extractAudio: format === 'mp3',
+                        audioFormat: format === 'mp3' ? 'mp3' : undefined,
+                        audioQuality: format === 'mp3' ? quality : undefined,
+                        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    };
+                    
+                    await youtubedl(videoUrl, options);
+                    
+                    console.log(`yt-dlp download completed: ${outputPath}`);
+                    logger.info(`yt-dlp download completed: ${outputPath}`);
+                    clearTimeout(downloadTimeout);
+                    resolve(outputPath);
+                    return;
+                } catch (ytdlpError) {
+                    console.log('yt-dlp download failed, trying ytdl-core...', ytdlpError.message);
+                }
+                
+                // Fallback to ytdl-core
+                console.log('Trying ytdl-core download...');
                 const stream = ytdl(videoUrl, {
                     quality: 'highestaudio',
                     filter: 'audioonly',
