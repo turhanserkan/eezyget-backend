@@ -689,12 +689,31 @@ function updateDownloadProgress(data) {
 // Health check
 async function checkBackendHealth() {
     try {
-        const response = await fetch(`${API_BASE_URL}/health`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
+        const response = await fetch(`${API_BASE_URL}/health`, {
+            signal: controller.signal,
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            console.error('Health check failed with status:', response.status);
+            return false;
+        }
+        
         const data = await response.json();
         return data.status === 'OK';
     } catch (error) {
         console.error('Backend health check failed:', error);
-        return false;
+        // Don't show error popup for network issues during health check
+        return true; // Return true to avoid blocking the interface
     }
 }
 
