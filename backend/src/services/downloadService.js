@@ -136,23 +136,13 @@ class DownloadService {
         try {
             logger.info(`Using fallback search for: ${query}`);
             
-            // Alternative approach: Use a simple search pattern
-            // This creates a dummy result that will be handled by the ytdl-core download process
-            const searchTerms = query.split(' ').slice(0, 3).join(' '); // Simplified search
-            
-            // Return a generic result that will trigger YouTube search via ytdl-core
-            return [{
-                id: 'fallback-search',
-                title: searchTerms,
-                duration: '3:00',
-                url: `https://www.youtube.com/results?search_query=${encodeURIComponent(searchTerms)}`,
-                thumbnail: null,
-                views: 1000,
-                uploadDate: new Date().toISOString()
-            }];
+            // In fallback mode, we cannot provide real YouTube URLs
+            // We need to return empty results or throw an error
+            logger.warn('YouTube search is temporarily unavailable due to API restrictions');
+            throw new Error('YouTube search is temporarily unavailable. Please try again later.');
         } catch (error) {
             logger.error('Fallback search failed:', error.message);
-            throw new Error('All YouTube search methods failed');
+            throw new Error('YouTube search is temporarily unavailable. Please try again later.');
         }
     }
 
