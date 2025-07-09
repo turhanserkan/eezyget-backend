@@ -5,6 +5,8 @@ const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 const logger = require('./utils/logger');
 const downloadRoutes = require('./routes/download');
@@ -16,6 +18,14 @@ const { requestLogger } = require('./middleware/requestLogger');
 dotenv.config();
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: process.env.CORS_ORIGINS?.split(',') || ['https://eezyget.com'],
+        methods: ['GET', 'POST']
+    }
+});
+
 const PORT = process.env.PORT || 3001;
 
 // Trust proxy for Railway deployment
@@ -118,25 +128,47 @@ app.use(errorHandler);
 // Graceful shutdown
 process.on('SIGTERM', () => {
     logger.info('SIGTERM received, shutting down gracefully');
-    server.close(() => {
-        logger.info('Process terminated');
-        process.exit(0);
+    io.close(() => {
+        server.close(() => {
+            logger.info('Process terminated');
+            process.exit(0);
+        });
     });
 });
 
 process.on('SIGINT', () => {
     logger.info('SIGINT received, shutting down gracefully');
-    server.close(() => {
-        logger.info('Process terminated');
-        process.exit(0);
+    io.close(() => {
+        server.close(() => {
+            logger.info('Process terminated');
+            process.exit(0);
+        });
     });
 });
 
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+    logger.info(`Socket connected: ${socket.id}`);
+    
+    socket.on('join-download', (jobId) => {
+        socket.join(`download-${jobId}`);
+        logger.info(`Socket ${socket.id} joined download-${jobId}`);
+    });
+    
+    socket.on('disconnect', () => {
+        logger.info(`Socket disconnected: ${socket.id}`);
+    });
+});
+
+// Make io available globally for download service
+global.io = io;
+
 // Start server
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
     logger.info(`eezyGet Backend API running on port ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`Health check: http://localhost:${PORT}/health`);
+    logger.info(`Socket.IO enabled for real-time updates`);
 });
 
 module.exports = app;
