@@ -33,8 +33,12 @@ jobs:
             echo "=== Git status ==="
             git status
             
+            echo "=== Reset local changes ==="
+            git reset --hard HEAD
+            git clean -fd
+            
             echo "=== Git pull ==="
-            git pull origin main || echo "Git pull failed"
+            git pull origin main
             
             echo "=== PM2 restart ==="
             pm2 restart all
